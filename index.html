@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="reorganise.css">
+    <title>Reorganise</title>
+</head>
+<body>
+    <div id="main"></div>
+
+    <!-- Include JavaScript dependencies -->
+    <script type="text/javascript" src="./target/scala-2.11/reorganise-jsdeps.js"></script>
+    <!-- Include Scala.js compiled code -->
+    <script type="text/javascript" src="./target/scala-2.11/reorganise-fastopt.js"></script>
+    <!-- Run application -->
+    <script>
+        Reorganise().main(document.getElementById('main'));
+    </script>
+</body>
+</html>
