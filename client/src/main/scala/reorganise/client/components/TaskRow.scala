@@ -15,9 +15,15 @@ object TaskRow {
     .render_P (p => {
       <.li (bss.listGroup.item,
         <.input.checkbox (^.checked := p.task.completed, ^.onChange --> p.stateChange (p.task.copy (completed = !p.task.completed))),
-        <.span(" "),
+        <.span ("  "),
         if (p.task.completed) <.s (p.task.text) else <.span (p.task.text),
-        Button (Button.Props (p.editItem (p.task), addStyles = Seq (bss.pullRight, bss.buttonXS)), "Edit")
+        <.span (" "),
+        <.div (
+          <.span (p.task.startDate),
+          <.span (" "),
+          Button (Button.Props (p.editItem (p.task), addStyles = Seq (bss.buttonXS)), "Edit"),
+          bss.pullRight
+        )
       )
     }).build
 
