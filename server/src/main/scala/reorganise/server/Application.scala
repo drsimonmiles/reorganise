@@ -9,7 +9,7 @@ import reorganise.shared.comms.TasksAPI
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class Application @Inject() (implicit val config: Configuration, env: Environment) extends Controller {
-  val tasksService = new TasksService ()
+  val tasksService = new TasksService (config.underlying.getString ("tasks.file"))
 
   def index = Action {
     Ok (views.html.index ("Reorganise"))
@@ -35,6 +35,6 @@ class Application @Inject() (implicit val config: Configuration, env: Environmen
       request.body.asJson.foreach { msg =>
         println (s"CLIENT - $msg")
       }
-      Ok("")
+      Ok ("")
   }
 }

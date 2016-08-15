@@ -55,8 +55,8 @@ object TaskForm {
 
   val component = ReactComponentB[Props]("TaskForm")
     .initialState_P (p => State (p.task.getOrElse (
-      //Task (id = -1, text = "", LocalDate.now.toString, list = "Miscellaneous", recur = None, completed = false))))
-      Task (id = -1, text = "", currentDate, list = "Miscellaneous", recur = -1, completed = false))))
+      //Task (id = -1, text = "", currentDate, list = "Miscellaneous", recur = -1, completed = false))))
+      Task (id = -1, text = "", currentDate, list = "Miscellaneous", recur = None, completed = false))))
     .renderBackend[Backend]
     .build
 
