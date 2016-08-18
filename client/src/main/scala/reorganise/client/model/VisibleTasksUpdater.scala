@@ -1,19 +1,24 @@
 package reorganise.client.model
 
 import diode.data.{Pot, Ready}
-import diode.{ActionHandler, Effect, ModelRW}
-import reorganise.client.comms.ServerCaller._
+import diode.{ModelR, ActionHandler, Effect, ModelRW}
+import reorganise.client.comms.ServerCaller.{deleteTaskFromServer, updateTaskOnServer, loadTasksFromServer}
+import reorganise.shared.model.TasksView
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class VisibleTasksUpdater[Model] (modelRW: ModelRW[Model, Pot[VisibleTasks]]) extends ActionHandler (modelRW) {
+class VisibleTasksUpdater[Model] (visible: ModelRW[Model, Pot[VisibleTasks]], view: ModelR[Model, TasksView])
+  extends ActionHandler (visible) {
+
   def handle = {
-    case ReloadVisibleTasksFromServer =>
-      effectOnly (Effect (loadTasksFromServer ().map (RefreshClientShownTasks)))
     case RefreshClientShownTasks (tasks) =>
       updated (Ready (VisibleTasks (tasks)))
     case UpdateTask (task) =>
-      effectOnly (Effect (updateTaskOnServer (task).map (RefreshClientShownTasks)))
+      updated (value.map (_.updated (task)),
+        Effect (updateTaskOnServer (task, view.value).map (RefreshClientShownTasks)))
     case DeleteTask (task) =>
-      updated (value.map (_.remove (task)), Effect (deleteTaskFromServer (task.id).map (RefreshClientShownTasks)))
+      updated (value.map (_.remove (task)),
+        Effect (deleteTaskFromServer (task.id, view.value).map (RefreshClientShownTasks)))
+    case ReloadVisibleTasksFromServer =>
+      effectOnly (Effect (loadTasksFromServer (view.value).map (RefreshClientShownTasks)))
   }
 }

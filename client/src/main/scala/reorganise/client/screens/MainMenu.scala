@@ -26,7 +26,7 @@ object MainMenu {
         // build a list of menu items
         for (item <- menuItems) yield
           <.li (^.key := item.idx, (props.currentLoc == item.location) ?= (^.className := "active"),
-            props.router.link (item.location)(item.icon, " ", item.label(props))
+            props.router.link (item.location)(item.icon, " ", item.label (props))
           )
       )
   }

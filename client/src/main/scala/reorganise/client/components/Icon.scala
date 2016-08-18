@@ -11,6 +11,12 @@ object Icon {
 
   def apply (name: String): Icon = <.i (^.className := s"fa fa-$name")
 
+  def banned (name: String): Icon =
+    <.span (^.className := "fa-stack",
+      <.i (^.className := s"fa fa-$name fa-stack-1x"),
+      <.i (^.className := "fa fa-ban fa-stack-2x")
+    )
+
   def adjust = apply ("adjust")
   def adn = apply ("adn")
   def alignCenter = apply ("align-center")
@@ -51,13 +57,9 @@ object Icon {
   def asterisk = apply ("asterisk")
   def at = apply ("at")
   def automobile = apply ("automobile")
-
   def backward = apply ("backward")
-
   def ban = apply ("ban")
-
   def bank = apply ("bank")
-
   def barChart = apply ("bar-chart")
 
   def barChartO = apply ("bar-chart-o")

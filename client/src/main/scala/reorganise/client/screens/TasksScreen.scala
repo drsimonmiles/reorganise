@@ -29,7 +29,7 @@ object TasksScreen {
       else ($.props >>= (_.proxy.dispatch (UpdateTask (task)))) >> $.modState (s => s.copy (showTaskForm = false))
 
     def render (p: Props, s: State) =
-      Panel (Panel.Props ("What needs to be done"), <.div (
+      Panel (Panel.Props ("All tasks"), <.div (
         p.proxy ().renderFailed (ex => "Error loading"),
         p.proxy ().renderPending (_ > 500, _ => "Loading..."),
         p.proxy ().render (todos => TaskList (todos.tasks,

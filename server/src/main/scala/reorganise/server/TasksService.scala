@@ -1,27 +1,17 @@
 package reorganise.server
 
 import java.io.{FileWriter, PrintWriter, File}
-import play.api.libs.json.{JsError, JsSuccess, Json, JsValue}
+import java.time.LocalDate
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import reorganise.server.model.TasksData
 import reorganise.server.model.Readers._
 import reorganise.server.model.Writers._
 import reorganise.shared.comms.TasksAPI
-import reorganise.shared.model.Task
+import reorganise.shared.model.{ListTasks, WeeksTasks, TodaysTasks, TasksView, AllTasks, Task}
 import scala.io.Source
 
 class TasksService (tasksFile: String) extends TasksAPI {
   val currentTasksSchema = "01"
-
-  var testTasks = Vector (
-    Task (id = 0, text = "First task", startDate = "2016-08-12", list = "Test", recur = Some (7), completed = false),
-    Task (id = 1, text = "Second task", startDate = "2016-10-12", list = "Test", recur = None, completed = false),
-    Task (id = 2, text = "Third task", startDate = "2016-06-12", list = "Other", recur = None, completed = false),
-    Task (id = 3, text = "Fourth task", startDate = "2016-04-12", list = "Other", recur = None, completed = true)
-/*    Task (id = 0, text = "First task", startDate = "2016-08-12", list = "Test", recur = 7, completed = false),
-    Task (id = 1, text = "Second task", startDate = "2016-10-12", list = "Test", recur = -1, completed = false),
-    Task (id = 2, text = "Third task", startDate = "2016-06-12", list = "Other", recur = -1, completed = false),
-    Task (id = 3, text = "Fourth task", startDate = "2016-04-12", list = "Other", recur = -1, completed = true)*/
-  )
 
   var cachedTasks: Option[TasksData] = None
 
@@ -50,13 +40,26 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case None =>
     }
 
-  def loadTasks (): Vector[Task] =
-    retrieveTasksData match {
+  private def startLocalDate (task: Task) =
+    LocalDate.parse (task.startDate)
+
+  private def upToDate (tasks: Vector[Task], toDate: LocalDate): Vector[Task] =
+    tasks.filter (task => toDate.isAfter (startLocalDate (task)) || toDate.isEqual (startLocalDate (task)))
+
+  def loadTasks (view: TasksView): Vector[Task] = {
+    val allTasks = retrieveTasksData match {
       case Some (data) => data.tasks
       case None => Vector[Task] ()
     }
+    (view.list match {
+      case AllTasks => allTasks
+      case TodaysTasks => upToDate (allTasks, LocalDate.now)
+      case WeeksTasks => upToDate (allTasks, LocalDate.now.plusDays (6))
+      case ListTasks (list) => allTasks.filter (_.list == list)
+    }).filter (view.includeCompleted || !_.completed)
+  }
 
-  def updateTask (task: Task): Vector[Task] = {
+  def updateTask (task: Task, view: TasksView): Vector[Task] = {
     retrieveTasksData match {
       case Some (data) =>
         val newTaskData =
@@ -65,21 +68,21 @@ class TasksService (tasksFile: String) extends TasksAPI {
               case i if i.id == task.id => task
               case i => i
             })
-        else
-          data.copy (tasks = data.tasks :+ task.copy (id = data.nextID), nextID = data.nextID + 1)
+          else
+            data.copy (tasks = data.tasks :+ task.copy (id = data.nextID), nextID = data.nextID + 1)
         cachedTasks = Some (newTaskData)
         storeTasksData ()
-        newTaskData.tasks
+        loadTasks (view)
       case None => Vector[Task] ()
     }
   }
 
-  def deleteTask (taskID: Long): Vector[Task] =
+  def deleteTask (taskID: Long, view: TasksView): Vector[Task] =
     retrieveTasksData match {
       case Some (data) =>
         cachedTasks = Some (data.copy (tasks = data.tasks.filterNot (_.id == taskID)))
         storeTasksData ()
-        cachedTasks.get.tasks
-      case None => Vector [Task]()
+        loadTasks (view)
+      case None => Vector[Task] ()
     }
 }

@@ -1,6 +1,6 @@
 package reorganise.client.model
 
-import reorganise.shared.model.Task
+import reorganise.shared.model.{TasksView, Task}
 
 case class VisibleTasks (tasks: Vector[Task]) {
   def updated (newTask: Task) =
@@ -10,5 +10,5 @@ case class VisibleTasks (tasks: Vector[Task]) {
     }
 
   def remove (task: Task) =
-    VisibleTasks (tasks.filterNot(_ == task))
+    VisibleTasks (tasks.filterNot (_ == task))
 }

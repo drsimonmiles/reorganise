@@ -2,7 +2,9 @@ package reorganise.client.components
 
 import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
+import reorganise.client.components.Icon.{banned, refresh}
 import reorganise.client.styles.GlobalStyles
+import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.shared.model.Task
 import scalacss.ScalaCssReact._
 
@@ -19,7 +21,14 @@ object TaskRow {
         if (p.task.completed) <.s (p.task.text) else <.span (p.task.text),
         <.span (" "),
         <.div (
+          <.span (p.task.list, bss.labelOpt (primary)),
+          <.span (" "),
           <.span (p.task.startDate),
+          <.span (" "),
+          p.task.recur match {
+            case Some (days) => <.span (refresh, days.toString)
+            case None => banned ("refresh")
+          },
           <.span (" "),
           Button (Button.Props (p.editItem (p.task), addStyles = Seq (bss.buttonXS)), "Edit"),
           bss.pullRight
