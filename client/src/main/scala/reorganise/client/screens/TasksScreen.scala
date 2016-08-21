@@ -1,54 +1,52 @@
 package reorganise.client.screens
 
-import diode.data.Pot
 import diode.react.ReactPot._
 import diode.react.ModelProxy
-import japgolly.scalajs.react.{ReactComponentB, ReactElement, Callback, BackendScope}
+import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.Icon.plusSquare
-import reorganise.client.components.{Panel, Button, TaskList}
-import reorganise.client.model.{UpdateTask, ReloadVisibleTasksFromServer, VisibleTasks}
-import reorganise.shared.model.Task
+import reorganise.client.components.{TaskRow, UList, TaskListListItem, Panel, Button}
+import reorganise.client.model.{CreateTask, ChangeView, LoadableModel, ReloadVisibleTasksFromServer}
+import reorganise.client.styles.GlobalStyles.bootstrapStyles
+import reorganise.shared.model.{VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks, Task}
+import scalacss.ScalaCssReact._
 
 object TasksScreen {
-  case class Props (proxy: ModelProxy [Pot[VisibleTasks]])
+  @inline private def bss = bootstrapStyles
 
-  case class State (selectedTask: Option[Task] = None, showTaskForm: Boolean = false)
+  private val permanent = Vector[TaskListListItem] (
+    TaskListListItem ("All", AllTasks),
+    TaskListListItem ("Today", TodaysTasks),
+    TaskListListItem ("Week", WeeksTasks)
+  )
 
-  class Backend ($: BackendScope[Props, State]) {
-    def mounted (props: Props): Callback =
-      // dispatch a message to refresh the todos, which will cause TodoStore to fetch todos from the server
-      Callback.when (props.proxy ().isEmpty)(props.proxy.dispatch (ReloadVisibleTasksFromServer))
+  def lists (visible: VisibleTasks): Vector[TaskListListItem] =
+    permanent ++ visible.lists.map (list => TaskListListItem (list, ListTasks (list)))
 
-    def editTask (task: Option[Task]) =
-      // activate the edit dialog
-      $.modState (s => s.copy (selectedTask = task, showTaskForm = true))
+  val component = ReactComponentB[ModelProxy [LoadableModel]] ("TaskScreen")
+    .render_P { p =>
+      <.div (bss.row,
+        <.div (bss.columns (2),
+          Panel (Panel.Props ("Lists"),
+            p.zoom (_.tasks).apply ().render (visible =>
+              UList.menu[TaskListListItem] (lists (visible), _.label,
+                i => p.dispatch (ChangeView (p.value.view.copy (list = i.view))),
+                i => p.value.view.list == i.view))
+            //  p.zoom (_.tasks).apply ().render (visible => TaskListList (visible.tasks))
+          )
+        ),
+        <.div (bss.columns (10),
+          Panel (Panel.Props ("All tasks"), <.div (
+            p.zoom (_.tasks).apply ().renderFailed (ex => "Error loading"),
+            p.zoom (_.tasks).apply ().renderPending (_ > 500, _ => "Loading..."),
+            p.zoom (_.tasks).apply ().render (visible => UList (visible.tasks, {task: Task => TaskRow (task, p)})),
+            Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"))
+          )
+        )
+      )
+    }.componentDidMount { scope =>
+      Callback.when (scope.props.zoom (_.tasks).apply ().isEmpty)(scope.props.dispatch (ReloadVisibleTasksFromServer))
+    }.build
 
-    def taskEdited (task: Task, cancelled: Boolean) =
-      if (cancelled) $.modState (s => s.copy (showTaskForm = false))
-      else ($.props >>= (_.proxy.dispatch (UpdateTask (task)))) >> $.modState (s => s.copy (showTaskForm = false))
-
-    def render (p: Props, s: State) =
-      Panel (Panel.Props ("All tasks"), <.div (
-        p.proxy ().renderFailed (ex => "Error loading"),
-        p.proxy ().renderPending (_ > 500, _ => "Loading..."),
-        p.proxy ().render (todos => TaskList (todos.tasks,
-          task => p.proxy.dispatch (UpdateTask (task)), task => editTask (Some (task)))),
-        Button (Button.Props (editTask (None)), plusSquare, " New")),
-
-        // if the dialog is open, add it to the panel, otherwise add an empty placeholder
-        if (s.showTaskForm) TaskForm (TaskForm.Props (s.selectedTask, taskEdited))
-        else Seq.empty[ReactElement])
-  }
-
-  // create the React component for To Do management
-  val component = ReactComponentB[Props] ("TaskScreen")
-    .initialState (State ()) // initial state from TodoStore
-    .renderBackend[Backend]
-    .componentDidMount (scope => scope.backend.mounted (scope.props))
-    .build
-
-  /** Returns a function compatible with router location system while using our own props */
-  def apply (proxy: ModelProxy[Pot[VisibleTasks]]) = component (Props (proxy))
+  def apply (proxy: ModelProxy[LoadableModel]) = component (proxy)
 }
-

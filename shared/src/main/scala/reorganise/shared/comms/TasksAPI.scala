@@ -1,9 +1,10 @@
 package reorganise.shared.comms
 
-import reorganise.shared.model.{TasksView, Task}
+import reorganise.shared.model.{VisibleTasks, TasksView, Task}
 
 trait TasksAPI {
-  def loadTasks (view: TasksView): Vector[Task]
-  def updateTask (task: Task, view: TasksView): Vector[Task]
-  def deleteTask (taskID: Long, view: TasksView): Vector[Task]
+  def createTask (view: TasksView): VisibleTasks
+  def loadTasks (view: TasksView): VisibleTasks
+  def updateTask (task: Task, view: TasksView): VisibleTasks
+  def deleteTask (taskID: Long, view: TasksView): VisibleTasks
 }

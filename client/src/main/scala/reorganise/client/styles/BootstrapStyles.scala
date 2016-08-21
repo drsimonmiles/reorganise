@@ -12,10 +12,10 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val contextDomain = Domain.ofValues (success, info, warning, danger)
 
   def commonStyle[A] (domain: Domain[A], base: String) = styleF (domain)(opt =>
-    styleS(addClassNames (base, s"$base-$opt"))
+    styleS (addClassNames (base, s"$base-$opt"))
   )
 
-  def styleWrap(classNames: String*) = style(addClassNames(classNames: _*))
+  def styleWrap (classNames: String*) = style (addClassNames (classNames: _*))
 
   val buttonOpt = commonStyle (csDomain, "btn")
 
@@ -55,6 +55,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   }
 
   val _listGroup = listGroup
+  val pullLeft = styleWrap ("pull-left")
   val pullRight = styleWrap ("pull-right")
   val buttonXS = styleWrap ("btn-xs")
   val close = styleWrap ("close")
@@ -65,4 +66,8 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
 
   val formGroup = styleWrap ("form-group")
   val formControl = styleWrap ("form-control")
+  val formInline = styleWrap ("form-inline")
+
+  def row = styleWrap ("row")
+  def columns (number: Int) = styleWrap ("col-md-" + number)
 }
