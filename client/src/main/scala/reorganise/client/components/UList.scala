@@ -8,19 +8,17 @@ import scalacss.ScalaCssReact._
 object UList {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props[Item] (items: Seq[Item], itemComponent: Item => ReactElement)
-
-  private def component[Item] = ReactComponentB[Props[Item]] ("TaskList")
+  private def component[Item] (itemComponent: Item => ReactElement) = ReactComponentB[Seq[Item]] ("TaskList")
     .render_P (p =>
-      <.ul (bss.listGroup.listGroup) (p.items.map {
-        item => p.itemComponent (item)
+      <.ul (bss.listGroup.listGroup) (p.map {
+        item => itemComponent (item)
       })).build
 
   def apply[Item] (items: Seq[Item], itemComponent: Item => ReactElement) =
-    component (Props (items, itemComponent))
+    component (itemComponent) (items)
 
   def menu[Item] (items: Seq[Item], label: Item => String, interaction: Item => Callback, current: Item => Boolean) =
-    component (Props (items, { item: Item =>
+    component ({ item: Item =>
       <.li (bss.listGroup.item, ^.onClick --> interaction (item), label (item), current (item) ?= (^.className := "active"))
-    }))
+    }) (items)
 }
