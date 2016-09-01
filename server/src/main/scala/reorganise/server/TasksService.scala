@@ -7,20 +7,18 @@ import reorganise.server.model.TasksData
 import reorganise.server.model.Readers._
 import reorganise.server.model.Writers._
 import reorganise.shared.comms.TasksAPI
-import reorganise.shared.model.{VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, TasksView, AllTasks, Task}
+import reorganise.shared.model.{TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, TasksView, AllTasks, Task}
 import scala.io.Source
 
 class TasksService (tasksFile: String) extends TasksAPI {
-  val currentTasksSchema = "01"
-  val emptySharedTasksData = VisibleTasks (Vector[Task] (), Vector[String] ())
-  val defaultList = "Miscellaneous"
+  val emptySharedTasksData = VisibleTasks (Vector[Task] (), Vector[TaskList] ())
+  val emptyDatabase = TasksData (currentTasksSchema, Vector[Task] (), Vector[TaskList] (), 0l, 0l)
 
-  case class CachedData (tasksData: TasksData, lists: Vector[String]) {
-    def this (tasksData: TasksData) =
-      this (tasksData, tasksData.tasks.map (_.list).distinct.sorted)
-  }
+  // Data in cache, including loaded data and derived/dependent in-memory data
+  case class CachedData (tasksData: TasksData)
 
   var cache: Option[CachedData] = None
+  var view = TasksView (includeCompleted = false, list = TodaysTasks)
 
   private def retrieveTasksData: Option[CachedData] = {
     if (cache.isEmpty)
@@ -34,20 +32,30 @@ class TasksService (tasksFile: String) extends TasksAPI {
           }
         }
         else
-          Some (CachedData (TasksData (currentTasksSchema, Vector[Task] (), 0l), Vector[String] ()))
+          Some (CachedData (emptyDatabase))
       }
     cache
   }
 
-  private def storeTasksData (): Unit =
+  private def defaultList: TaskList = {
+    val firstList = TaskList (0l, "Miscellaneous")
     retrieveTasksData match {
-      case Some (data) =>
-        val out = new PrintWriter (new FileWriter (tasksFile))
-        val json = Json.toJson (data.tasksData)
-        out.println (json)
-        out.close ()
-      case None =>
+      case Some (data) => data.tasksData.lists.headOption.getOrElse (firstList)
+      case None => firstList
     }
+  }
+
+  private def storeTasksData (data: TasksData): VisibleTasks =
+    storeCachedData (CachedData (data))
+
+  private def storeCachedData (data: CachedData): VisibleTasks = {
+    cache = Some (data)
+    val out = new PrintWriter (new FileWriter (tasksFile))
+    val json = Json.toJson (data.tasksData)
+    out.println (json)
+    out.close ()
+    loadTasks ()
+  }
 
   private def startLocalDate (task: Task) =
     LocalDate.parse (task.startDate)
@@ -55,25 +63,30 @@ class TasksService (tasksFile: String) extends TasksAPI {
   private def upToDate (tasks: Vector[Task], toDate: LocalDate): Vector[Task] =
     tasks.filter (task => toDate.isAfter (startLocalDate (task)) || toDate.isEqual (startLocalDate (task)))
 
-  def createTask (view: TasksView): VisibleTasks = {
+  def createTask (): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
-        val list = view.list match {
-          case ListTasks (viewedList) => viewedList
-          case _ => defaultList
+        val listID = view.list match {
+          case ListTasks (viewedListID) => viewedListID
+          case _ => defaultList.id
         }
-        val task = Task (data.tasksData.nextID, "", LocalDate.now.toString, list, None, completed = false)
-        val newTasksData =
-          data.tasksData.copy (tasks = data.tasksData.tasks :+ task, nextID = data.tasksData.nextID + 1)
-        cache = Some (new CachedData (newTasksData))
-        storeTasksData ()
-        loadTasks (view)
+        val task = Task (data.tasksData.nextTaskID, "", LocalDate.now.toString, listID, None, completed = false)
+        storeTasksData (data.tasksData.copy (tasks = data.tasksData.tasks :+ task, nextTaskID = data.tasksData.nextTaskID + 1))
       case None =>
         emptySharedTasksData
     }
-  }
 
-  def loadTasks (view: TasksView): VisibleTasks =
+  def createList (): VisibleTasks =
+    retrieveTasksData match {
+      case Some (data) =>
+        val nextID = data.tasksData.nextListID
+        val newList = TaskList (nextID, "New list")
+        storeTasksData (data.tasksData.copy (lists = data.tasksData.lists :+ newList, nextListID = nextID + 1))
+      case None =>
+        emptySharedTasksData
+    }
+
+  def loadTasks (): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
         val visibleTasks = (view.list match {
@@ -82,11 +95,11 @@ class TasksService (tasksFile: String) extends TasksAPI {
           case WeeksTasks => upToDate (data.tasksData.tasks, LocalDate.now.plusDays (6))
           case ListTasks (list) => data.tasksData.tasks.filter (_.list == list)
         }).filter (view.includeCompleted || !_.completed)
-        VisibleTasks (visibleTasks, data.lists)
+        VisibleTasks (visibleTasks, data.tasksData.lists)
       case None => emptySharedTasksData
     }
 
-  def updateTask (task: Task, view: TasksView): VisibleTasks = {
+  def updateTask (task: Task): VisibleTasks = {
     retrieveTasksData match {
       case Some (data) =>
         val newTaskData =
@@ -96,20 +109,37 @@ class TasksService (tasksFile: String) extends TasksAPI {
               case i => i
             })
           else
-            data.tasksData//.copy (tasks = data.tasksData.tasks :+ task.copy (id = data.nextID), nextID = data.tasksData.nextID + 1)
-        cache = Some (new CachedData (newTaskData))
-        storeTasksData ()
-        loadTasks (view)
+            data.tasksData
+        storeTasksData (newTaskData)
       case None => emptySharedTasksData
     }
   }
 
-  def deleteTask (taskID: Long, view: TasksView): VisibleTasks =
+  def updateList (list: TaskList): VisibleTasks = {
     retrieveTasksData match {
       case Some (data) =>
-        cache = Some (new CachedData (data.tasksData.copy (tasks = data.tasksData.tasks.filterNot (_.id == taskID))))
-        storeTasksData ()
-        loadTasks (view)
+        val newTaskData =
+          if (data.tasksData.lists.exists (_.id == list.id))
+            data.tasksData.copy (lists = data.tasksData.lists.collect {
+              case i if i.id == list.id => list
+              case i => i
+            })
+          else
+            data.tasksData
+        storeTasksData (newTaskData)
       case None => emptySharedTasksData
     }
+  }
+
+  def deleteTask (taskID: Long): VisibleTasks =
+    retrieveTasksData match {
+      case Some (data) =>
+        storeTasksData (data.tasksData.copy (tasks = data.tasksData.tasks.filterNot (_.id == taskID)))
+      case None => emptySharedTasksData
+    }
+
+  def setView (newView: TasksView): VisibleTasks = {
+    view = newView
+    loadTasks ()
+  }
 }

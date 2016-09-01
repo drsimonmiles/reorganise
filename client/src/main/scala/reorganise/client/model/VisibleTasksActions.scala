@@ -1,7 +1,7 @@
 package reorganise.client.model
 
 import diode.Action
-import reorganise.shared.model.{VisibleTasks, TasksView, Task}
+import reorganise.shared.model.{TaskList, VisibleTasks, TasksView, Task}
 
 trait VisibleTasksAction extends Action
 
@@ -10,4 +10,6 @@ case class RefreshClientShownTasks (data: VisibleTasks) extends VisibleTasksActi
 case object CreateTask extends VisibleTasksAction
 case class UpdateTask (task: Task) extends VisibleTasksAction
 case class DeleteTask (task: Task) extends VisibleTasksAction
+case object CreateList extends VisibleTasksAction
+case class UpdateList (list: TaskList) extends VisibleTasksAction
 case class ChangeView (newView: TasksView) extends VisibleTasksAction

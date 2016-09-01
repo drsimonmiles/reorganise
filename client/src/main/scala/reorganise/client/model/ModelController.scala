@@ -11,7 +11,7 @@ object ModelController extends Circuit[LoadableModel]  with ReactConnector[Loada
 
   def actionHandler: ModelController.HandlerFunction =
     composeHandlers (
-      new VisibleTasksUpdater (zoomRW (_.tasks) ((model, value) => model.copy (tasks = value)), zoom (_.view)),
+      new VisibleTasksUpdater (zoomRW (_.tasks) ((model, value) => model.copy (tasks = value))),
       new TaskViewUpdater (zoomRW (_.view) ((model, value) => model.copy (view = value)))
     )
 }

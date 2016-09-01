@@ -5,10 +5,10 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.Icon.plusSquare
-import reorganise.client.components.{TaskRow, UList, TaskListListItem, Panel, Button}
-import reorganise.client.model.{CreateTask, ChangeView, LoadableModel, ReloadVisibleTasksFromServer}
+import reorganise.client.components.{NamedPanel, TaskRow, UList, TaskListListItem, Panel, Button}
+import reorganise.client.model.{UpdateList, CreateList, CreateTask, ChangeView, LoadableModel, ReloadVisibleTasksFromServer}
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
-import reorganise.shared.model.{VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks, Task}
+import reorganise.shared.model.{TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks, Task}
 import scalacss.ScalaCssReact._
 
 object TasksScreen {
@@ -21,7 +21,28 @@ object TasksScreen {
   )
 
   def lists (visible: VisibleTasks): Vector[TaskListListItem] =
-    permanent ++ visible.lists.map (list => TaskListListItem (list, ListTasks (list)))
+    permanent ++ visible.lists.map (list => TaskListListItem (list.name, ListTasks (list.id)))
+
+  def currentListName (model: LoadableModel): String =
+    model.view.list match {
+      case AllTasks => "All"
+      case TodaysTasks => "Today"
+      case WeeksTasks => "Week"
+      case ListTasks (listID) =>
+        if (model.tasks.isReady) model.tasks.get.lookupList (listID).map (_.name).getOrElse ("Unknown list") else "Loading..."
+    }
+
+  def setCurrentListName (proxy: ModelProxy[LoadableModel]) (newName: String): Callback =
+    proxy.value.view.list match {
+      case ListTasks (listID) => proxy.dispatch (UpdateList (TaskList (listID, newName)))
+      case _ => Callback.empty
+    }
+
+  def isCurrentListRenamable (model: LoadableModel): Boolean =
+    model.view.list match {
+      case ListTasks (listID) => true
+      case _ => false
+    }
 
   val component = ReactComponentB[ModelProxy [LoadableModel]] ("TaskScreen")
     .render_P { p =>
@@ -31,15 +52,16 @@ object TasksScreen {
             p.zoom (_.tasks).apply ().render (visible =>
               UList.menu[TaskListListItem] (lists (visible), _.label,
                 i => p.dispatch (ChangeView (p.value.view.copy (list = i.view))),
-                i => p.value.view.list == i.view))
-            //  p.zoom (_.tasks).apply ().render (visible => TaskListList (visible.tasks))
+                i => p.value.view.list == i.view)),
+            Button (Button.Props (p.dispatch (CreateList)), plusSquare, " New list")
           )
         ),
         <.div (bss.columns (10),
-          Panel (Panel.Props ("All tasks"), <.div (
+          NamedPanel (NamedPanel.Props (currentListName (p.value), setCurrentListName (p), isCurrentListRenamable (p.value)),
+            <.div (
             p.zoom (_.tasks).apply ().renderFailed (ex => "Error loading"),
             p.zoom (_.tasks).apply ().renderPending (_ > 500, _ => "Loading..."),
-            p.zoom (_.tasks).apply ().render (visible => UList (visible.tasks, {task: Task => TaskRow (task, p)})),
+            p.zoom (_.tasks).apply ().render (visible => UList (visible.tasks, {task: Task => TaskRow (task, visible.lookupList, p)})),
             Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"))
           )
         )
