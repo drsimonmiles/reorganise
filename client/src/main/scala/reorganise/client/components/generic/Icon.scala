@@ -1,4 +1,4 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
 import japgolly.scalajs.react.ReactNode
 import japgolly.scalajs.react.vdom.prefix_<^._
@@ -10,6 +10,7 @@ object Icon {
   type Icon = ReactNode
 
   def apply (name: String): Icon = <.i (^.className := s"fa fa-$name")
+  def fixedWidth (name: String): Icon = <.i (^.className := s"fa fa-$name fa-fw")
 
   def banned (name: String): Icon =
     <.span (^.className := "fa-stack",
@@ -221,6 +222,7 @@ object Icon {
   def clockO = apply ("clock-o")
 
   def close = apply ("close")
+  def closeFW = fixedWidth ("close")
 
   def cloud = apply ("cloud")
 

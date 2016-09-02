@@ -18,4 +18,7 @@ case class VisibleTasks (tasks: Vector[Task], lists: Vector[TaskList]) {
 
   def removeTask (task: Task) =
     copy (tasks = tasks.filterNot (_ == task))
+
+  def removeList (listID: Long) =
+    copy (lists = lists.filterNot (_.id == listID))
 }

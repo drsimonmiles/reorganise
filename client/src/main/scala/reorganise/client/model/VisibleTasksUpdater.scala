@@ -20,6 +20,8 @@ class VisibleTasksUpdater[Model] (visible: ModelRW[Model, Pot[VisibleTasks]]) ex
       updated (value.map (_.updatedList (list)), Effect (updateListOnServer (list).map (RefreshClientShownTasks)))
     case DeleteTask (task) =>
       updated (value.map (_.removeTask (task)), Effect (deleteTaskFromServer (task.id).map (RefreshClientShownTasks)))
+    case DeleteList (listID) =>
+      updated (value.map (_.removeList (listID)), Effect (deleteListFromServer (listID).map (RefreshClientShownTasks)))
     case ReloadVisibleTasksFromServer =>
       effectOnly (Effect (loadTasksFromServer.map (RefreshClientShownTasks)))
   }

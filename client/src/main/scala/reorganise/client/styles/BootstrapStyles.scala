@@ -1,6 +1,7 @@
 package reorganise.client.styles
 
 import BootstrapAlertStyles._
+import japgolly.scalajs.react.vdom.prefix_<^._
 import scalacss.Defaults._
 import scalacss.mutable
 
@@ -18,15 +19,12 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   def styleWrap (classNames: String*) = style (addClassNames (classNames: _*))
 
   val buttonOpt = commonStyle (csDomain, "btn")
-
   val button = buttonOpt (default)
 
   val panelOpt = commonStyle (csDomain, "panel")
-
   val panel = panelOpt (default)
 
   val labelOpt = commonStyle (csDomain, "label")
-
   val label = labelOpt (default)
 
   val alert = commonStyle (contextDomain, "alert")
@@ -68,6 +66,12 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val formControl = styleWrap ("form-control")
   val formInline = styleWrap ("form-inline")
 
-  def row = styleWrap ("row")
+  val row = styleWrap ("row")
   def columns (number: Int) = styleWrap ("col-md-" + number)
+
+  val dropdown = styleWrap ("dropdown")
+  val dropdownButton = styleWrap ("dropdown-toggle")
+  val caret = styleWrap ("caret")
+  val dropdownMenu = styleWrap ("dropdown-menu")
+  val dataToggle = "data-toggle".reactAttr
 }

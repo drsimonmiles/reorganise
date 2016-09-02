@@ -1,7 +1,6 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
 import org.scalajs.dom._
-
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 

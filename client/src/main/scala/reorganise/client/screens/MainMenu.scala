@@ -3,7 +3,8 @@ package reorganise.client.screens
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement, ReactNode}
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.Icon.{check, Icon}
+import reorganise.client.components.generic.Icon
+import Icon.{check, Icon}
 import reorganise.client.routes.{TasksScreenID, ScreenID}
 import reorganise.client.styles.GlobalStyles
 import scalacss.ScalaCssReact._

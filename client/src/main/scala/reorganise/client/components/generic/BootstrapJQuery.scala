@@ -1,4 +1,4 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
 import scala.scalajs.js
 

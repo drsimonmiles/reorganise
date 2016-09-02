@@ -1,27 +1,30 @@
 package reorganise.client.screens
 
+import diode.data.Ready
 import diode.react.ReactPot._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.Icon.plusSquare
-import reorganise.client.components.{NamedPanel, TaskRow, UList, TaskListListItem, Panel, Button}
-import reorganise.client.model.{UpdateList, CreateList, CreateTask, ChangeView, LoadableModel, ReloadVisibleTasksFromServer}
+import reorganise.client.components.generic.{UList, Panel, NamedPanel, Icon, Button}
+import Icon.{close, plusSquare}
+import reorganise.client.components.{ListRow, TaskRow, TaskListListItem}
+import reorganise.client.model.{ChangeView, UpdateList, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer}
+import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
-import reorganise.shared.model.{TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks, Task}
+import reorganise.shared.model.{Task, TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks}
 import scalacss.ScalaCssReact._
 
 object TasksScreen {
   @inline private def bss = bootstrapStyles
 
   private val permanent = Vector[TaskListListItem] (
-    TaskListListItem ("All", AllTasks),
-    TaskListListItem ("Today", TodaysTasks),
-    TaskListListItem ("Week", WeeksTasks)
+    TaskListListItem ("All", AllTasks, info),
+    TaskListListItem ("Today", TodaysTasks, info),
+    TaskListListItem ("Week", WeeksTasks, info)
   )
 
   def lists (visible: VisibleTasks): Vector[TaskListListItem] =
-    permanent ++ visible.lists.map (list => TaskListListItem (list.name, ListTasks (list.id)))
+    permanent ++ visible.lists.map (list => TaskListListItem (list.name, ListTasks (list.id), danger))
 
   def currentListName (model: LoadableModel): String =
     model.view.list match {
@@ -38,31 +41,51 @@ object TasksScreen {
       case _ => Callback.empty
     }
 
-  def isCurrentListRenamable (model: LoadableModel): Boolean =
+  def isCurrentListEditable (model: LoadableModel): Boolean =
     model.view.list match {
       case ListTasks (listID) => true
       case _ => false
     }
 
+  def isCurrentListDeletable (model: LoadableModel): Boolean =
+    model.view.list match {
+      case ListTasks (listID) => model.tasks match {
+        case Ready (visible) => visible.tasks.isEmpty
+        case _ => false
+      }
+      case _ => false
+    }
+
+  def deleteCurrentList (model: LoadableModel, dispatcher: ModelProxy[_]): Callback =
+    model.view.list match {
+      case ListTasks (listID) =>
+        dispatcher.dispatch (DeleteList (listID)) >>
+          dispatcher.dispatch (ChangeView (model.view.copy (list = AllTasks)))
+      case _ => Callback.empty
+    }
+
   val component = ReactComponentB[ModelProxy [LoadableModel]] ("TaskScreen")
     .render_P { p =>
+      val loadedData = p.zoom (_.tasks)
       <.div (bss.row,
         <.div (bss.columns (2),
           Panel (Panel.Props ("Lists"),
             p.zoom (_.tasks).apply ().render (visible =>
-              UList.menu[TaskListListItem] (lists (visible), _.label,
-                i => p.dispatch (ChangeView (p.value.view.copy (list = i.view))),
-                i => p.value.view.list == i.view)),
+              <.ul (bss.listGroup.listGroup) (lists (visible).map {
+                list => ListRow (list, p)
+              })),
             Button (Button.Props (p.dispatch (CreateList)), plusSquare, " New list")
           )
         ),
         <.div (bss.columns (10),
-          NamedPanel (NamedPanel.Props (currentListName (p.value), setCurrentListName (p), isCurrentListRenamable (p.value)),
+          NamedPanel (NamedPanel.Props (currentListName (p.value), setCurrentListName (p), isCurrentListEditable (p.value)),
             <.div (
-            p.zoom (_.tasks).apply ().renderFailed (ex => "Error loading"),
-            p.zoom (_.tasks).apply ().renderPending (_ > 500, _ => "Loading..."),
-            p.zoom (_.tasks).apply ().render (visible => UList (visible.tasks, {task: Task => TaskRow (task, visible.lookupList, p)})),
-            Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"))
+              loadedData.value.renderFailed (ex => "Error loading"),
+              loadedData.value.renderPending (_ > 500, _ => "Loading..."),
+              loadedData.value.render (visible => UList (visible.tasks, {task: Task => TaskRow (loadedData, task, visible.lookupList, p)})),
+              isCurrentListEditable (p.value) ?= Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"),
+              isCurrentListDeletable (p.value) ?= Button (Button.Props (deleteCurrentList (p.value, p)), close, " Delete list")
+            )
           )
         )
       )

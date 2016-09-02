@@ -10,6 +10,7 @@ case class RefreshClientShownTasks (data: VisibleTasks) extends VisibleTasksActi
 case object CreateTask extends VisibleTasksAction
 case class UpdateTask (task: Task) extends VisibleTasksAction
 case class DeleteTask (task: Task) extends VisibleTasksAction
+case class DeleteList (listID: Long) extends VisibleTasksAction
 case object CreateList extends VisibleTasksAction
 case class UpdateList (list: TaskList) extends VisibleTasksAction
 case class ChangeView (newView: TasksView) extends VisibleTasksAction

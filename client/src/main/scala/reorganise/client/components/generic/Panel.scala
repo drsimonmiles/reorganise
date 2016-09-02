@@ -1,9 +1,9 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
-import japgolly.scalajs.react.{ReactNode, ReactComponentB}
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.styles.{GlobalStyles, BootstrapAlertStyles}
+import japgolly.scalajs.react.{ReactComponentB, ReactNode}
 import reorganise.client.styles.BootstrapAlertStyles.default
+import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
 import scalacss.ScalaCssReact._
 
 object Panel {

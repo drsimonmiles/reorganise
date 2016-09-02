@@ -138,6 +138,13 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case None => emptySharedTasksData
     }
 
+  def deleteList (listID: Long): VisibleTasks =
+    retrieveTasksData match {
+      case Some (data) =>
+        storeTasksData (data.tasksData.copy (lists = data.tasksData.lists.filterNot (_.id == listID)))
+      case None => emptySharedTasksData
+    }
+
   def setView (newView: TasksView): VisibleTasks = {
     view = newView
     loadTasks ()

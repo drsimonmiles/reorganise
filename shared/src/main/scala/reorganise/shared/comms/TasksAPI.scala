@@ -9,5 +9,6 @@ trait TasksAPI {
   def updateTask (task: Task): VisibleTasks
   def updateList (list: TaskList): VisibleTasks
   def deleteTask (taskID: Long): VisibleTasks
+  def deleteList (listID: Long): VisibleTasks
   def setView (view: TasksView): VisibleTasks
 }

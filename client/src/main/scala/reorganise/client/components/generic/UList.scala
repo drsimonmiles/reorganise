@@ -1,7 +1,7 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
 import japgolly.scalajs.react.vdom.prefix_<^._
-import japgolly.scalajs.react.{ReactElement, Callback, ReactComponentB}
+import japgolly.scalajs.react.{Callback, ReactComponentB, ReactElement}
 import reorganise.client.styles.GlobalStyles
 import scalacss.ScalaCssReact._
 

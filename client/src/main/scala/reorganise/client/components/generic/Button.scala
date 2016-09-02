@@ -1,11 +1,11 @@
-package reorganise.client.components
+package reorganise.client.components.generic
 
-import japgolly.scalajs.react.{ReactNode, ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.styles.{GlobalStyles, BootstrapAlertStyles}
+import japgolly.scalajs.react.{Callback, ReactComponentB, ReactNode}
 import reorganise.client.styles.BootstrapAlertStyles.default
-import scalacss.ScalaCssReact._
+import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
 import scalacss.Defaults.StyleA
+import scalacss.ScalaCssReact._
 
 object Button {
   @inline private def bss = GlobalStyles.bootstrapStyles
