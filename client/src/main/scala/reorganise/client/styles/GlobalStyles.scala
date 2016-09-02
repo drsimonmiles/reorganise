@@ -9,7 +9,7 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingTop (70.px))
   )
 
-  val rowEqHeight = style (display :=! "-webkit-box", display :=! "-webkit-flex", display :=! "-ms-flexbox", display.flex)
+  val compact = style (paddingTop (0.px), paddingBottom (0.px), marginTop (0.px), marginBottom (0.px))
 
   val bootstrapStyles = new BootstrapStyles
 }

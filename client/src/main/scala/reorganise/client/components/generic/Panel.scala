@@ -9,12 +9,12 @@ import scalacss.ScalaCssReact._
 object Panel {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  case class Props (heading: String, style: BootstrapAlertStyles.Value = default)
+  case class Props (heading: Option[String], style: BootstrapAlertStyles.Value = default)
 
   val component = ReactComponentB[Props]("Panel")
     .renderPC ((_, p, c) =>
       <.div (bss.panelOpt (p.style),
-        <.div (bss.panelHeading, p.heading),
+        p.heading.isDefined ?= <.div (bss.panelHeading, p.heading.get),
         <.div (bss.panelBody, c)
       )
     ).build

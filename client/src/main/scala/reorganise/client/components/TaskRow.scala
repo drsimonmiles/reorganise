@@ -8,12 +8,12 @@ import reorganise.client.components.generic.{Dropdown, Icon}
 import Icon.{banned, refresh}
 import reorganise.client.model.UpdateTask
 import reorganise.client.styles.BootstrapAlertStyles.primary
-import reorganise.client.styles.GlobalStyles
+import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{VisibleTasks, TaskList, Task}
 import scalacss.ScalaCssReact._
 
 object TaskRow {
-  @inline private def bss = GlobalStyles.bootstrapStyles
+  @inline private def bss = bootstrapStyles
 
   case class Props (visible: ModelProxy[Pot[VisibleTasks]], task: Task,
                     listLookup: Long => Option[TaskList], stateChange: Task => Callback)
@@ -31,13 +31,12 @@ object TaskRow {
     }
 
     def render (p: Props, s: Task): ReactElement = {
-      //val listLabel: String = p.listLookup (s.list).map (_.name).getOrElse ("Unknown")
       <.div (bss.row,
         <.div (bss.columns (7),
           <.div (bss.columns (1),
             <.input.checkbox (^.checked := s.completed,
               ^.onChange --> p.stateChange (s.copy (completed = !s.completed)))),
-          <.div (bss.columns (11), bss.formGroup,
+          <.div (bss.columns (11), bss.formGroup, compact,
             if (s.completed) <.s (s.text)
             else
               <.input.text (bss.formControl, ^.id := "description", ^.value := s.text,

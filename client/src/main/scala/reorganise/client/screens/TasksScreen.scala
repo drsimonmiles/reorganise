@@ -10,7 +10,7 @@ import Icon.{close, plusSquare}
 import reorganise.client.components.{ListRow, TaskRow, TaskListListItem}
 import reorganise.client.model.{ChangeView, UpdateList, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer}
 import reorganise.client.styles.BootstrapAlertStyles._
-import reorganise.client.styles.GlobalStyles.bootstrapStyles
+import reorganise.client.styles.GlobalStyles.{bootstrapStyles, compact}
 import reorganise.shared.model.{Task, TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks}
 import scalacss.ScalaCssReact._
 
@@ -69,7 +69,7 @@ object TasksScreen {
       val loadedData = p.zoom (_.tasks)
       <.div (bss.row,
         <.div (bss.columns (2),
-          Panel (Panel.Props ("Lists"),
+          Panel (Panel.Props (None),
             p.zoom (_.tasks).apply ().render (visible =>
               <.ul (bss.listGroup.listGroup) (lists (visible).map {
                 list => ListRow (list, p)
@@ -82,7 +82,12 @@ object TasksScreen {
             <.div (
               loadedData.value.renderFailed (ex => "Error loading"),
               loadedData.value.renderPending (_ > 500, _ => "Loading..."),
-              loadedData.value.render (visible => UList (visible.tasks, {task: Task => TaskRow (loadedData, task, visible.lookupList, p)})),
+              //loadedData.value.render (visible => UList (visible.tasks, {task: Task => TaskRow (loadedData, task, visible.lookupList, p)})),
+              loadedData.value.render (visible =>
+                <.div (bss.listGroup.listGroup,
+                  visible.tasks.map (t => TaskRow (loadedData, t, visible.lookupList, p))
+                )
+              ),
               isCurrentListEditable (p.value) ?= Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"),
               isCurrentListDeletable (p.value) ?= Button (Button.Props (deleteCurrentList (p.value, p)), close, " Delete list")
             )
