@@ -5,12 +5,12 @@ import diode.react.ReactPot._
 import diode.react.ModelProxy
 import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.{UList, Panel, NamedPanel, Icon, Button}
-import Icon.{close, plusSquare}
-import reorganise.client.components.{ListRow, TaskRow, TaskListListItem}
+import reorganise.client.components.generic.{Panel, NamedPanel, Icon, Button}
+import Icon.{close, cut, plusSquare}
+import reorganise.client.components.{TaskStatusBar, ListRow, TaskRow, TaskListListItem}
 import reorganise.client.model.{ChangeView, UpdateList, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer}
 import reorganise.client.styles.BootstrapAlertStyles._
-import reorganise.client.styles.GlobalStyles.{bootstrapStyles, compact}
+import reorganise.client.styles.GlobalStyles.bootstrapStyles
 import reorganise.shared.model.{Task, TaskList, VisibleTasks, ListTasks, WeeksTasks, TodaysTasks, AllTasks}
 import scalacss.ScalaCssReact._
 
@@ -64,6 +64,9 @@ object TasksScreen {
       case _ => Callback.empty
     }
 
+  def toggleCompleted (model: LoadableModel, dispatcher: ModelProxy[_]): Callback =
+    dispatcher.dispatch (ChangeView (model.view.copy (includeCompleted = !model.view.includeCompleted)))
+
   val component = ReactComponentB[ModelProxy [LoadableModel]] ("TaskScreen")
     .render_P { p =>
       val loadedData = p.zoom (_.tasks)
@@ -82,14 +85,16 @@ object TasksScreen {
             <.div (
               loadedData.value.renderFailed (ex => "Error loading"),
               loadedData.value.renderPending (_ > 500, _ => "Loading..."),
-              //loadedData.value.render (visible => UList (visible.tasks, {task: Task => TaskRow (loadedData, task, visible.lookupList, p)})),
               loadedData.value.render (visible =>
                 <.div (bss.listGroup.listGroup,
-                  visible.tasks.map (t => TaskRow (loadedData, t, visible.lookupList, p))
+                  TaskStatusBar (p),
+                  visible.tasks.map (t => TaskRow (loadedData, t, p.zoom (_.feature), visible.lookupList, p))
                 )
               ),
               isCurrentListEditable (p.value) ?= Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"),
-              isCurrentListDeletable (p.value) ?= Button (Button.Props (deleteCurrentList (p.value, p)), close, " Delete list")
+              isCurrentListDeletable (p.value) ?= Button (Button.Props (deleteCurrentList (p.value, p)), close, " Delete list"),
+              Button (Button.Props (toggleCompleted (p.value, p)), cut,
+                if (p.value.view.includeCompleted) " Hide completed" else " Show completed")
             )
           )
         )

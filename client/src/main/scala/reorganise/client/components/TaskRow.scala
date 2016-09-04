@@ -4,9 +4,9 @@ import diode.data.{Ready, Pot}
 import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.{Dropdown, Icon}
-import Icon.{banned, refresh}
-import reorganise.client.model.UpdateTask
+import reorganise.client.components.generic.{DatePicker, Dropdown}
+import reorganise.client.components.generic.Icon.{banned, refresh}
+import reorganise.client.model.{RecurFeature, StartFeature, ListFeature, TaskFeature, UpdateTask}
 import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{VisibleTasks, TaskList, Task}
@@ -15,7 +15,7 @@ import scalacss.ScalaCssReact._
 object TaskRow {
   @inline private def bss = bootstrapStyles
 
-  case class Props (visible: ModelProxy[Pot[VisibleTasks]], task: Task,
+  case class Props (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
                     listLookup: Long => Option[TaskList], stateChange: Task => Callback)
 
   class Backend (t: BackendScope[Props, Task]) {
@@ -24,21 +24,19 @@ object TaskRow {
       p.visible.value match {
         case Ready (tasksData) =>
           val listLabel: String = p.listLookup (p.task.list).map (_.name).getOrElse ("Unknown")
-          Dropdown[TaskList] (listLabel, tasksData.lists, _.name, setList)
+          Dropdown[TaskList] (listLabel, primary, tasksData.lists, _.name, setList)
         case _ =>
-          Dropdown[TaskList] ("Unknown", Vector[TaskList] (), _.name, setList)
+          Dropdown[TaskList] ("Unknown", primary, Vector[TaskList] (), _.name, setList)
       }
     }
 
     def render (p: Props, s: Task): ReactElement = {
       <.div (bss.row,
-        <.div (bss.columns (7),
+        <.div (bss.columns (10),
           <.div (bss.columns (1),
             <.input.checkbox (^.checked := s.completed,
               ^.onChange --> p.stateChange (s.copy (completed = !s.completed)))),
           <.div (bss.columns (11), bss.formGroup, compact,
-            if (s.completed) <.s (s.text)
-            else
               <.input.text (bss.formControl, ^.id := "description", ^.value := s.text,
                 ^.placeholder := "write task description",
                 ^.onChange ==> { e: ReactEventI => t.setState (s.copy (text = e.target.value)) },
@@ -47,15 +45,14 @@ object TaskRow {
                 },
                 ^.onBlur ==> { e: ReactEventI => p.stateChange (s) }
               ))),
-        <.div (bss.columns (2),
-          <.span (listDropdown (p))),
-        <.div (bss.columns (2),
-          <.span (s.startDate)),
-        <.div (bss.columns (1),
-          s.recur match {
+        <.div (bss.columns (2), p.feature.value match {
+          case ListFeature => <.span (listDropdown (p))
+          case StartFeature => DatePicker (s.startDate)
+          case RecurFeature => s.recur match {
             case Some (days) => <.span (refresh, days.toString)
             case None => banned ("refresh")
-          })
+          }
+        })
       )
     }
   }
@@ -65,7 +62,7 @@ object TaskRow {
     .renderBackend[Backend]
     .build
 
-  def apply (visible: ModelProxy[Pot[VisibleTasks]], task: Task,
+  def apply (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
              listLookup: Long => Option[TaskList], dispatcher: ModelProxy[_]) =
-    component (Props (visible, task, listLookup, task => dispatcher.dispatch (UpdateTask (task))))
+    component (Props (visible, task, feature, listLookup, task => dispatcher.dispatch (UpdateTask (task))))
 }

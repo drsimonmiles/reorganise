@@ -14,3 +14,4 @@ case class DeleteList (listID: Long) extends VisibleTasksAction
 case object CreateList extends VisibleTasksAction
 case class UpdateList (list: TaskList) extends VisibleTasksAction
 case class ChangeView (newView: TasksView) extends VisibleTasksAction
+case class ChangeFeature (newFeature: TaskFeature) extends VisibleTasksAction

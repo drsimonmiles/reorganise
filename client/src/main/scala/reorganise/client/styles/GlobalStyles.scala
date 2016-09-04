@@ -9,7 +9,7 @@ object GlobalStyles extends StyleSheet.Inline {
     paddingTop (70.px))
   )
 
-  val compact = style (paddingTop (0.px), paddingBottom (0.px), marginTop (0.px), marginBottom (0.px))
+  val compact = style (paddingTop (1.px), paddingBottom (1.px), marginTop (0.px), marginBottom (0.px))
 
   val bootstrapStyles = new BootstrapStyles
 }
