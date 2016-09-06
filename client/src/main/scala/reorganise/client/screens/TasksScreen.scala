@@ -53,7 +53,7 @@ object TasksScreen {
           )
         ),
         <.div (bss.columns (10),
-          NamedPanel (NamedPanel.Props (currentList.name, setCurrentListName, isCurrentListEditable),
+          NamedPanel (NamedPanel.Props (currentList.name, setCurrentListName, true),
             <.div (
                 <.div (bss.listGroup.listGroup,
                   TaskStatusBar (p),

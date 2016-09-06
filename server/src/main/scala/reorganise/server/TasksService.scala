@@ -85,7 +85,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case Some (data) =>
         val list = lookupList (view.list)
         val unordered = list.derivation match {
-          case None => data.tasks.filter (_.list == list)
+          case None => data.tasks.filter (_.list == view.list)
           case Some (NoRestriction) => data.tasks
           case Some (PriorToToday (days)) => upToDate (data.tasks, LocalDate.now.plusDays (days))
         }
