@@ -4,9 +4,9 @@ import diode.data.{Ready, Pot}
 import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.{DatePicker, Dropdown}
-import reorganise.client.components.generic.Icon.{banned, refresh}
-import reorganise.client.model.{RecurFeature, StartFeature, ListFeature, TaskFeature, UpdateTask}
+import reorganise.client.components.generic.{Button, DatePicker, Dropdown}
+import reorganise.client.components.generic.Icon.{banned, chevronCircleDown, chevronCircleUp, refresh}
+import reorganise.client.model.{UpdateList, OrderFeature, RecurFeature, StartFeature, ListFeature, TaskFeature, UpdateTask}
 import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{VisibleTasks, TaskList, Task}
@@ -16,7 +16,8 @@ object TaskRow {
   @inline private def bss = bootstrapStyles
 
   case class Props (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
-                    listLookup: Long => Option[TaskList], stateChange: Task => Callback)
+                    listLookup: Long => Option[TaskList], stateChange: Task => Callback,
+                    moveUp: () => Callback, moveDown: () => Callback)
 
   class Backend (t: BackendScope[Props, Task]) {
     def listDropdown (p: Props) = {
@@ -52,6 +53,11 @@ object TaskRow {
             case Some (days) => <.span (refresh, days.toString)
             case None => banned ("refresh")
           }
+          case OrderFeature =>
+            <.div (
+              <.span (Button (Button.Props (onClick = p.moveUp ()), chevronCircleUp)),
+              <.span (Button (Button.Props (onClick = p.moveDown ()), chevronCircleDown))
+            )
         })
       )
     }
@@ -64,5 +70,6 @@ object TaskRow {
 
   def apply (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
              listLookup: Long => Option[TaskList], dispatcher: ModelProxy[_]) =
-    component (Props (visible, task, feature, listLookup, task => dispatcher.dispatch (UpdateTask (task))))
+    component (Props (visible, task, feature, listLookup, task => dispatcher.dispatch (UpdateTask (task)),
+      () => Callback.empty, () => Callback.empty))
 }

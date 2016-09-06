@@ -12,8 +12,8 @@ class VisibleTasksUpdater[Model] (visible: ModelRW[Model, Pot[VisibleTasks]]) ex
       updated (Ready (data))
     case CreateTask =>
       effectOnly (Effect (createTask.map (RefreshClientShownTasks)))
-    case CreateList =>
-      effectOnly (Effect (createList.map (RefreshClientShownTasks)))
+    case CreateList (isDerived) =>
+      effectOnly (Effect (createList (isDerived).map (RefreshClientShownTasks)))
     case UpdateTask (task) =>
       updated (value.map (_.updatedTask (task)), Effect (updateTaskOnServer (task).map (RefreshClientShownTasks)))
     case UpdateList (list) =>

@@ -1,3 +1,3 @@
 package reorganise.shared.model
 
-case class TasksView (includeCompleted: Boolean, list: TaskListView)
+case class TasksView (includeCompleted: Boolean, list: Long)

@@ -11,8 +11,8 @@ object ServerCaller {
   def createTask: Future[VisibleTasks] =
     AjaxClient[TasksAPI].createTask ().call ()
 
-  def createList: Future[VisibleTasks] =
-    AjaxClient[TasksAPI].createList ().call ()
+  def createList (isDerived: Boolean): Future[VisibleTasks] =
+    AjaxClient[TasksAPI].createList (isDerived).call ()
 
   def loadTasksFromServer: Future[VisibleTasks] =
     AjaxClient [TasksAPI].loadTasks ().call ()

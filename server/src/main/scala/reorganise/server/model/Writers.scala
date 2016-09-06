@@ -2,10 +2,10 @@ package reorganise.server.model
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import reorganise.shared.model.{TaskList, Task}
+import reorganise.shared.model.{PriorToToday, NoRestriction, Derivation, TaskList, Task}
 
 object Writers {
-  val currentTasksSchema = "03"
+  val currentTasksSchema = "04"
 
   implicit val taskWrites: Writes[Task] = (
     (JsPath \ "id").write[Long] and
@@ -16,9 +16,19 @@ object Writers {
     (JsPath \ "completed").write[Boolean]
   ) (unlift (Task.unapply))
 
+  implicit val derivationWrites = new Writes[Derivation] {
+    def writes (derivation: Derivation): JsValue =
+      derivation match {
+        case NoRestriction => JsString ("NoRestriction")
+        case PriorToToday (days) => JsString ("PriorToToday:" + days)
+      }
+  }
+
   implicit val taskListWrites: Writes[TaskList] = (
     (JsPath \ "id").write[Long] and
-    (JsPath \ "name").write[String]
+    (JsPath \ "name").write[String] and
+    (JsPath \ "order").write[Vector[Long]] and
+    (JsPath \ "derivation").writeNullable[Derivation]
   ) (unlift (TaskList.unapply))
 
   implicit val tasksDataWrites: Writes[TasksData] = (

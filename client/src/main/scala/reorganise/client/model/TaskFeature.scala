@@ -16,4 +16,7 @@ case object RecurFeature extends TaskFeature {
   val label = "Recurrence"
 }
 
+case object OrderFeature extends TaskFeature {
+  val label = "Order"
+}
 

@@ -4,7 +4,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.generic.Dropdown
-import reorganise.client.model.{ChangeFeature, ListFeature, RecurFeature, StartFeature, TaskFeature, LoadableModel}
+import reorganise.client.model.{OrderFeature, ChangeFeature, ListFeature, RecurFeature, StartFeature, TaskFeature, LoadableModel}
 import reorganise.client.styles.BootstrapAlertStyles.warning
 import reorganise.client.styles.GlobalStyles._
 import scalacss.ScalaCssReact._
@@ -13,7 +13,7 @@ object TaskStatusBar {
   @inline private def bss = bootstrapStyles
 
   def featureDropdown (p: ModelProxy[LoadableModel]) = {
-    val features = Vector (ListFeature, StartFeature, RecurFeature)
+    val features = Vector (ListFeature, StartFeature, RecurFeature, OrderFeature)
     def setFeature (feature: TaskFeature) = p.dispatch (ChangeFeature (feature))
     Dropdown[TaskFeature] (p.value.feature.label, warning, features, _.label, setFeature)
   }

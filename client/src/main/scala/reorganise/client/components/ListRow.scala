@@ -1,10 +1,10 @@
 package reorganise.client.components
 
 import diode.react.ModelProxy
-import japgolly.scalajs.react.{ReactComponentB, Callback}
 import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.{Callback, ReactComponentB}
 import reorganise.client.model.{ChangeView, LoadableModel}
-import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
+import reorganise.client.styles.GlobalStyles
 import scalacss.ScalaCssReact._
 
 object ListRow {
@@ -18,7 +18,7 @@ object ListRow {
         ^.onClick --> p.onClick, p.isCurrent ?= (^.className := "active"))
     ).build
 
-  def apply (list: TaskListListItem, model: ModelProxy[LoadableModel]) =
-    component (Props (list, model.value.view.list == list.view,
-      model.dispatch (ChangeView (model.value.view.copy (list = list.view)))))
+  def apply (item: TaskListListItem, model: ModelProxy[LoadableModel]) =
+    component (Props (item, model.value.view.list == item.view.list,
+      model.dispatch (ChangeView (model.value.view.copy (list = item.view.list)))))
 }

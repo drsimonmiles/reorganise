@@ -3,11 +3,11 @@ package reorganise.client.model
 import diode.Circuit
 import diode.data.Empty
 import diode.react.ReactConnector
-import reorganise.shared.model.{TodaysTasks, TasksView}
+import reorganise.shared.model.TasksView
 
 object ModelController extends Circuit[LoadableModel]  with ReactConnector[LoadableModel] {
   def initialModel =
-    LoadableModel (Empty, TasksView (includeCompleted = false, TodaysTasks), ListFeature)
+    LoadableModel (Empty, TasksView (includeCompleted = false, -1), ListFeature)
 
   def actionHandler: ModelController.HandlerFunction =
     composeHandlers (
