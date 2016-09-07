@@ -11,7 +11,7 @@ import reorganise.client.components.{ListRow, TaskListListItem, TaskRow, TaskSta
 import reorganise.client.model.{ChangeView, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer, UpdateList}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
-import reorganise.shared.model.{NoRestriction, TaskList, TasksView, VisibleTasks}
+import reorganise.shared.model.{Task, NoRestriction, TaskList, TasksView, VisibleTasks}
 import scalacss.ScalaCssReact._
 
 object TasksScreen {
@@ -40,8 +40,25 @@ object TasksScreen {
           def deleteCurrentList (): CallbackTo[Unit] =
             p.dispatch (DeleteList (currentList.id)) >>
               p.dispatch (ChangeView (p.value.view.copy (list = backupList.id)))
+          def move (task: Task, up: Boolean, toLimit: Boolean) = {
+            val index = currentList.order.indexOf (task.id)
+            val oldOrder = currentList.order
+            val newOrder: Vector[Long] =
+              if (up && index > 0)
+                if (toLimit)
+                  (task.id +: oldOrder.take (index)) ++ oldOrder.drop (index + 1)
+                else
+                  (oldOrder.take (index - 1) :+ task.id :+ oldOrder (index - 1)) ++ oldOrder.drop (index + 1)
+              else if (!up && index < oldOrder.size - 1)
+                if (toLimit)
+                  oldOrder.take (index) ++ oldOrder.drop (index + 1) :+ task.id
+                else
+                  (oldOrder.take (index) :+ oldOrder (index + 1) :+ task.id) ++ oldOrder.drop (index + 2)
+              else oldOrder
+            p.dispatch (UpdateList (currentList.copy (order = newOrder)))
+          }
 
-      <.div (bss.row,
+          <.div (bss.row,
         <.div (bss.columns (2),
           Panel (Panel.Props (None),
             p.zoom (_.tasks).apply ().render (visible =>
@@ -53,11 +70,14 @@ object TasksScreen {
           )
         ),
         <.div (bss.columns (10),
-          NamedPanel (NamedPanel.Props (currentList.name, setCurrentListName, true),
+          NamedPanel (NamedPanel.Props (currentList.name, setCurrentListName, currentList != emptyList),
             <.div (
                 <.div (bss.listGroup.listGroup,
                   TaskStatusBar (p),
-                  visible.tasks.map (t => TaskRow (p.zoom (_.tasks), t, p.zoom (_.feature), visible.lookupList, p))
+                  visible.tasks.map (t =>
+                    TaskRow (p.zoom (_.tasks), t, p.zoom (_.feature), visible.lookupList, p,
+                      move (t, up = true, toLimit = true), move (t, up = true, toLimit = false),
+                      move (t, up = false, toLimit = false), move (t, up = false, toLimit = true)))
                 ),
               isCurrentListEditable ?= Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"),
               isCurrentListDeletable ?= Button (Button.Props (deleteCurrentList ()), close, " Delete list"),

@@ -1,15 +1,15 @@
 package reorganise.client.components
 
-import diode.data.{Ready, Pot}
+import diode.data.{Pot, Ready}
 import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
+import reorganise.client.components.generic.Icon.{banned, chevronCircleDown, chevronCircleUp, longArrowUp, longArrowDown, refresh}
 import reorganise.client.components.generic.{Button, DatePicker, Dropdown}
-import reorganise.client.components.generic.Icon.{banned, chevronCircleDown, chevronCircleUp, refresh}
-import reorganise.client.model.{UpdateList, OrderFeature, RecurFeature, StartFeature, ListFeature, TaskFeature, UpdateTask}
+import reorganise.client.model.{ListFeature, OrderFeature, RecurFeature, StartFeature, TaskFeature, UpdateTask}
 import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.client.styles.GlobalStyles._
-import reorganise.shared.model.{VisibleTasks, TaskList, Task}
+import reorganise.shared.model.{Task, TaskList, VisibleTasks}
 import scalacss.ScalaCssReact._
 
 object TaskRow {
@@ -17,7 +17,7 @@ object TaskRow {
 
   case class Props (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
                     listLookup: Long => Option[TaskList], stateChange: Task => Callback,
-                    moveUp: () => Callback, moveDown: () => Callback)
+                    moveUpAll: Callback, moveUpOne: Callback, moveDownOne: Callback, moveDownAll: Callback)
 
   class Backend (t: BackendScope[Props, Task]) {
     def listDropdown (p: Props) = {
@@ -25,7 +25,7 @@ object TaskRow {
       p.visible.value match {
         case Ready (tasksData) =>
           val listLabel: String = p.listLookup (p.task.list).map (_.name).getOrElse ("Unknown")
-          Dropdown[TaskList] (listLabel, primary, tasksData.lists, _.name, setList)
+          Dropdown[TaskList] (listLabel, primary, tasksData.lists.filter (_.derivation.isEmpty), _.name, setList)
         case _ =>
           Dropdown[TaskList] ("Unknown", primary, Vector[TaskList] (), _.name, setList)
       }
@@ -55,8 +55,10 @@ object TaskRow {
           }
           case OrderFeature =>
             <.div (
-              <.span (Button (Button.Props (onClick = p.moveUp ()), chevronCircleUp)),
-              <.span (Button (Button.Props (onClick = p.moveDown ()), chevronCircleDown))
+              <.span (Button (Button.Props (onClick = p.moveUpAll, addStyles = Seq (bss.buttonSmall)), longArrowUp)),
+              <.span (Button (Button.Props (onClick = p.moveUpOne, addStyles = Seq (bss.buttonSmall)), chevronCircleUp)),
+              <.span (Button (Button.Props (onClick = p.moveDownOne, addStyles = Seq (bss.buttonSmall)), chevronCircleDown)),
+              <.span (Button (Button.Props (onClick = p.moveDownAll, addStyles = Seq (bss.buttonSmall)), longArrowDown))
             )
         })
       )
@@ -69,7 +71,8 @@ object TaskRow {
     .build
 
   def apply (visible: ModelProxy[Pot[VisibleTasks]], task: Task, feature: ModelProxy[TaskFeature],
-             listLookup: Long => Option[TaskList], dispatcher: ModelProxy[_]) =
+             listLookup: Long => Option[TaskList], dispatcher: ModelProxy[_],
+             moveUpAll: Callback, moveUpOne: Callback, moveDownOne: Callback, moveDownAll: Callback) =
     component (Props (visible, task, feature, listLookup, task => dispatcher.dispatch (UpdateTask (task)),
-      () => Callback.empty, () => Callback.empty))
+      moveUpAll, moveUpOne, moveDownOne, moveDownAll))
 }

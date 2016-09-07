@@ -20,6 +20,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
 
   val buttonOpt = commonStyle (csDomain, "btn")
   val button = buttonOpt (default)
+  val buttonSmall = styleWrap ("btn-sm")
 
   val panelOpt = commonStyle (csDomain, "panel")
   val panel = panelOpt (default)
