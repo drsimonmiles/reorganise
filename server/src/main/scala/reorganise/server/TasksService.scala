@@ -7,14 +7,14 @@ import reorganise.server.model.TasksData
 import reorganise.server.model.Readers._
 import reorganise.server.model.Writers._
 import reorganise.shared.comms.TasksAPI
-import reorganise.shared.model.{PriorToToday, NoRestriction, TaskList, VisibleTasks, TasksView, Task}
+import reorganise.shared.model.{NoTasks, PriorToToday, NoRestriction, TaskList, VisibleTasks, TasksView, Task}
 import scala.io.Source
 
 class TasksService (tasksFile: String) extends TasksAPI {
   val emptySharedTasksData = VisibleTasks (Vector[Task] (), Vector[TaskList] ())
   val emptyDatabase = TasksData (currentTasksSchema, Vector[Task] (), Vector[TaskList] (), 0l, 0l)
   val listOrdering = new CorrespondingOrdering[Task, Long] (_.id, _: Seq[Long])
-  val emptyList = TaskList (-1, "Select or add new list to start", Vector[Long] (), Some (NoRestriction))
+  val emptyList = TaskList (-1, "Select or add new list to start", Vector[Long] (), Some (NoTasks))
 
   // Data in cache, including loaded data and derived/dependent in-memory data
   var cache: Option[TasksData] = None
@@ -86,6 +86,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
         val list = lookupList (view.list)
         val unordered = list.derivation match {
           case None => data.tasks.filter (_.list == view.list)
+          case Some (NoTasks) => Vector[Task] ()
           case Some (NoRestriction) => data.tasks
           case Some (PriorToToday (days)) => upToDate (data.tasks, LocalDate.now.plusDays (days))
         }

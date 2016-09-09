@@ -25,9 +25,9 @@ object TaskRow {
       p.visible.value match {
         case Ready (tasksData) =>
           val listLabel: String = p.listLookup (p.task.list).map (_.name).getOrElse ("Unknown")
-          Dropdown[TaskList] (listLabel, primary, tasksData.lists.filter (_.derivation.isEmpty), _.name, setList)
+          Dropdown[TaskList] ("list", listLabel, primary, tasksData.lists.filter (_.derivation.isEmpty), _.name, setList)
         case _ =>
-          Dropdown[TaskList] ("Unknown", primary, Vector[TaskList] (), _.name, setList)
+          Dropdown[TaskList] ("list", "Unknown", primary, Vector[TaskList] (), _.name, setList)
       }
     }
 

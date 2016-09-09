@@ -21,6 +21,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val buttonOpt = commonStyle (csDomain, "btn")
   val button = buttonOpt (default)
   val buttonSmall = styleWrap ("btn-sm")
+  val buttonNumber = styleWrap ("btn-number")
 
   val panelOpt = commonStyle (csDomain, "panel")
   val panel = panelOpt (default)
@@ -53,6 +54,8 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
     val itemOpt = commonStyle (contextDomain, "list-group-item")
   }
 
+  val inputAppend = styleWrap ("input-append")
+
   val _listGroup = listGroup
   val pullLeft = styleWrap ("pull-left")
   val pullRight = styleWrap ("pull-right")
@@ -66,6 +69,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val formGroup = styleWrap ("form-group")
   val formControl = styleWrap ("form-control")
   val formInline = styleWrap ("form-inline")
+  val inputNumber = styleWrap ("input-number")
 
   val row = styleWrap ("row")
   def columns (number: Int) = styleWrap ("col-md-" + number)
@@ -74,5 +78,13 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val dropdownButton = styleWrap ("dropdown-toggle")
   val caret = styleWrap ("caret")
   val dropdownMenu = styleWrap ("dropdown-menu")
+
   val dataToggle = "data-toggle".reactAttr
+  val dataType = "data-type".reactAttr
+  val dataField = "data-field".reactAttr
+
+  object inputGroup {
+    val inputGroup = styleWrap ("input-group")
+    val button = styleWrap ("input-group-btn")
+  }
 }

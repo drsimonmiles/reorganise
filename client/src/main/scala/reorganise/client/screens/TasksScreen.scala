@@ -11,13 +11,13 @@ import reorganise.client.components.{ListRow, TaskListListItem, TaskRow, TaskSta
 import reorganise.client.model.{ChangeView, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer, UpdateList}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
-import reorganise.shared.model.{Task, NoRestriction, TaskList, TasksView, VisibleTasks}
+import reorganise.shared.model.{NoTasks, Task, TaskList, TasksView, VisibleTasks}
 import scalacss.ScalaCssReact._
 
 object TasksScreen {
   @inline private def bss = bootstrapStyles
 
-  val emptyList = TaskList (-1, "Select or add new list to start", Vector[Long] (), Some (NoRestriction))
+  val emptyList = TaskList (-1, "Select or add new list to start", Vector[Long] (), Some (NoTasks))
 
   def lists (visible: VisibleTasks, currentView: TasksView): Vector[TaskListListItem] =
     visible.lists.map (list => TaskListListItem (list.name, currentView.copy (list = list.id),
