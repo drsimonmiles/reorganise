@@ -2,7 +2,7 @@ package reorganise.server.model
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import reorganise.shared.model.{PriorToToday, NoRestriction, Derivation, TaskList, Task}
+import reorganise.shared.model.{NoTasks, PriorToToday, NoRestriction, Derivation, TaskList, Task}
 
 object Writers {
   val currentTasksSchema = "04"
@@ -19,6 +19,7 @@ object Writers {
   implicit val derivationWrites = new Writes[Derivation] {
     def writes (derivation: Derivation): JsValue =
       derivation match {
+        case NoTasks => JsString ("NoTasks")
         case NoRestriction => JsString ("NoRestriction")
         case PriorToToday (days) => JsString ("PriorToToday:" + days)
       }

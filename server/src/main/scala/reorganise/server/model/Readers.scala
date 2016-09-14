@@ -3,7 +3,7 @@ package reorganise.server.model
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import reorganise.server.model.PreviousModel._
-import reorganise.shared.model.{NoRestriction, PriorToToday, Derivation, TaskList, Task}
+import reorganise.shared.model.{NoTasks, NoRestriction, PriorToToday, Derivation, TaskList, Task}
 
 object Readers {
   implicit val taskReads: Reads[Task] = (
@@ -19,6 +19,7 @@ object Readers {
     def reads (json: JsValue): JsResult[Derivation] = {
       val formula = json.as [String]
       if (formula == "NoRestriction") JsSuccess (NoRestriction)
+      else if (formula == "NoTasks") JsSuccess (NoTasks)
       else if (formula.startsWith ("PriorToToday:")) JsSuccess (PriorToToday (formula.drop (13).toInt))
       else JsError ()
     }

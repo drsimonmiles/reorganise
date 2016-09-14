@@ -1,52 +1,80 @@
 package reorganise.client.components
 
-import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.generic.{Dropdown, Icon}
-import reorganise.client.model.UpdateList
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles
 import reorganise.shared.model.{NoRestriction, NoTasks, PriorToToday, TaskList}
 import scalacss.ScalaCssReact._
 
-class EditDerivation {
+object EditDerivation {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  val component = ReactComponentB[ModelProxy[TaskList]] ("EditDerivation")
-    .render_P { model =>
+  case class Props (list: TaskList, update: TaskList => Callback)
+
+  class Backend (scope: BackendScope[Props, Int]) {
+    def render (model: Props, days: Int): ReactElement = {
       val noTasks = "No tasks"
       val noRestriction = "All tasks"
       val priorToToday = "Prior to today"
       val options = Vector (noTasks, noRestriction, priorToToday)
       def setDerivation (newDerivationName: String) = {
         val newDerivation =
-          if (newDerivationName == priorToToday) PriorToToday (0)//(getDays ())
+          if (newDerivationName == priorToToday) PriorToToday (days)
           else if (newDerivationName == noRestriction) NoRestriction
           else NoTasks
-        model.dispatch (UpdateList (model.value.copy (derivation = Some (newDerivation))))
+        model.update (model.list.copy (derivation = Some (newDerivation)))
       }
-      val current = model.value.derivation.map { _ match {
+      def setDays (newDays: Int) =
+        model.list.derivation.map { _ match {
+          case PriorToToday (oldDays) =>
+            model.update (model.list.copy (derivation = Some (PriorToToday (newDays))))
+          case _ =>
+            Callback.empty
+        }}.getOrElse (Callback.empty)
+      val current = model.list.derivation.map { _ match {
         case NoRestriction => noRestriction
         case NoTasks => noTasks
-        case PriorToToday (days) => priorToToday
+        case PriorToToday (_) => priorToToday
       }}.getOrElse ("No derivation set")
 
-      <.div (bss.formGroup,
-        <.label (^.`for` := "derivation", "Derivation"),
-        Dropdown[String] ("derivation", current, primary, options, s => s, setDerivation),
-        <.div (bss.inputGroup.inputGroup,
-          <.span (bss.inputGroup.button,
-            <.button (^.tpe := "button", bss.buttonOpt (default), bss.buttonNumber, bss.dataType := "minus", bss.dataField := "days", Icon.minus)
-          ),
-          <.input (^.tpe := "text", ^.name := "days", bss.formControl, bss.inputNumber, ^.value := "1", ^.min := "0", ^.max := "32767"),
-          <.span (bss.inputGroup.button,
-            <.button (^.tpe := "button", bss.buttonOpt (default), bss.buttonNumber, bss.dataType := "plus", bss.dataField := "days", Icon.plus)
+      <.div (bss.row,
+        <.div (bss.columns (1),
+          <.label (^.`for` := "derivation", "Derivation")
+        ),
+        <.div (bss.columns (9),
+          Dropdown[String] ("derivation", current, primary, options, s => s, setDerivation)
+        ),
+        <.div (bss.columns (2),
+          <.div (bss.inputGroup.inputGroup,
+            <.span (bss.inputGroup.button,
+              <.button (^.tpe := "button", bss.buttonOpt (default), Icon.minus,
+                ^.onClick --> { val newDays = (days - 1).max (0); scope.setState (newDays) >> setDays (newDays) }
+              )
+            ),
+            <.input (^.tpe := "text", ^.name := "days", bss.formControl, bss.inputNumber, ^.value := days),
+            <.span (bss.inputGroup.button,
+              <.button (^.tpe := "button", bss.buttonOpt (default), Icon.plus,
+                ^.onClick --> { val newDays = days + 1; scope.setState (newDays) >> setDays (newDays) }
+              )
+            )
           )
         )
       )
-    }.build
+    }
+  }
 
-  def apply (model: ModelProxy[TaskList]) =
-    component (model)
+  private def priorDays (list: TaskList): Int = list.derivation match {
+    case Some (PriorToToday (days)) => days
+    case _ => 0
+  }
+
+  val component = ReactComponentB[Props]("EditDerivation")
+    .initialState_P (p => priorDays (p.list))
+    .renderBackend[Backend]
+    .build
+
+  def apply (list: TaskList, update: TaskList => Callback) =
+    component (Props (list, update))
 }

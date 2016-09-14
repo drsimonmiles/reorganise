@@ -7,8 +7,8 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, CallbackTo, ReactComponentB}
 import reorganise.client.components.generic.Icon.{close, cut, plusSquare}
 import reorganise.client.components.generic.{Button, NamedPanel, Panel}
-import reorganise.client.components.{ListRow, TaskListListItem, TaskRow, TaskStatusBar}
-import reorganise.client.model.{ChangeView, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer, UpdateList}
+import reorganise.client.components.{EditDerivation, ListRow, TaskListListItem, TaskRow, TaskStatusBar}
+import reorganise.client.model.{ChangeSettingsView, ChangeView, CreateList, CreateTask, DeleteList, LoadableModel, ReloadVisibleTasksFromServer, UpdateList}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
 import reorganise.shared.model.{NoTasks, Task, TaskList, TasksView, VisibleTasks}
@@ -57,6 +57,7 @@ object TasksScreen {
               else oldOrder
             p.dispatch (UpdateList (currentList.copy (order = newOrder)))
           }
+          val toSettings = p.dispatch (ChangeSettingsView (!p.value.showSettings))
 
           <.div (bss.row,
         <.div (bss.columns (2),
@@ -73,8 +74,11 @@ object TasksScreen {
           NamedPanel (NamedPanel.Props (currentList.name, setCurrentListName, currentList != emptyList),
             <.div (
                 <.div (bss.listGroup.listGroup,
-                  TaskStatusBar (p),
-                  visible.tasks.map (t =>
+                  TaskStatusBar (p, toSettings),
+                  if (p.value.showSettings)
+                    EditDerivation (currentList, list => p.dispatch (UpdateList (list)))
+                  else
+                    visible.tasks.map (t =>
                     TaskRow (p.zoom (_.tasks), t, p.zoom (_.feature), visible.lookupList, p,
                       move (t, up = true, toLimit = true), move (t, up = true, toLimit = false),
                       move (t, up = false, toLimit = false), move (t, up = false, toLimit = true)))
