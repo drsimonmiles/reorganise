@@ -63,9 +63,10 @@ object TasksScreen {
         <.div (bss.columns (2),
           Panel (Panel.Props (None),
             p.zoom (_.tasks).apply ().render (visible =>
-              <.ul (bss.listGroup.listGroup) (lists (visible, p.value.view).map {
-                list => ListRow (list, p)
-              })),
+              <.ul (bss.listGroup.listGroup) (
+                Button (Button.Props (Callback.empty, addStyles = Seq (bss.listGroup.item)), "Lists"),
+                lists (visible, p.value.view).map { list => ListRow (list, p)}
+              )),
             Button (Button.Props (p.dispatch (CreateList (false))), plusSquare, " New label list"),
             Button (Button.Props (p.dispatch (CreateList (true))), plusSquare, " New derived list")
           )
