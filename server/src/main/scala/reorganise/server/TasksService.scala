@@ -18,7 +18,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
 
   // Data in cache, including loaded data and derived/dependent in-memory data
   var cache: Option[TasksData] = None
-  var view = TasksView (includeCompleted = false, -1)
+  var view = Option (TasksView (includeCompleted = false, -1))
 
   private def retrieveTasksData: Option[TasksData] = {
     if (cache.isEmpty)
@@ -59,7 +59,8 @@ class TasksService (tasksFile: String) extends TasksAPI {
   def createTask (): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
-        val task = Task (data.nextTaskID, "", LocalDate.now.toString, view.list, None, completed = false)
+        val task = Task (data.nextTaskID, "", LocalDate.now.toString,
+          view.map (_.list).getOrElse (emptyList.id), None, completed = false)
         storeTasksData (data.copy (
           tasks = data.tasks :+ task, nextTaskID = data.nextTaskID + 1,
           lists = data.lists.map (old => old.copy (order = old.order :+ task.id))
@@ -83,17 +84,22 @@ class TasksService (tasksFile: String) extends TasksAPI {
   def loadTasks (): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
-        val list = lookupList (view.list)
-        val unordered = list.derivation match {
-          case None => data.tasks.filter (_.list == view.list)
-          case Some (NoTasks) => Vector[Task] ()
-          case Some (NoRestriction) => data.tasks
-          case Some (PriorToToday (days)) => upToDate (data.tasks, LocalDate.now.plusDays (days))
+        view match {
+          case Some (tasksView) =>
+            val list = lookupList (tasksView.list)
+            val unordered = list.derivation match {
+              case None => data.tasks.filter (_.list == tasksView.list)
+              case Some (NoTasks) => Vector[Task] ()
+              case Some (NoRestriction) => data.tasks
+              case Some (PriorToToday (days) ) => upToDate (data.tasks, LocalDate.now.plusDays (days) )
+            }
+            val visibleTasks = unordered.
+              filter (tasksView.includeCompleted || ! _.completed).
+              sorted (listOrdering (list.order) )
+            VisibleTasks (visibleTasks, data.lists)
+          case None =>
+            VisibleTasks (Vector[Task] (), data.lists)
         }
-        val visibleTasks = unordered.
-          filter (view.includeCompleted || !_.completed).
-          sorted (listOrdering (list.order))
-        VisibleTasks (visibleTasks, data.lists)
       case None => emptySharedTasksData
     }
 
@@ -112,7 +118,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
     }
   }
 
-  def updateList (list: TaskList): VisibleTasks = {
+  def updateList (list: TaskList): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
         val newTaskData =
@@ -126,7 +132,12 @@ class TasksService (tasksFile: String) extends TasksAPI {
         storeTasksData (newTaskData)
       case None => emptySharedTasksData
     }
-  }
+
+  def updateListOrder (order: Vector[Long]): VisibleTasks =
+    retrieveTasksData match {
+      case Some (data) => storeTasksData (data.copy (lists = order.flatMap (id => data.lists.find (_.id == id))))
+      case None => emptySharedTasksData
+    }
 
   def deleteTask (taskID: Long): VisibleTasks =
     retrieveTasksData match {
@@ -142,7 +153,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case None => emptySharedTasksData
     }
 
-  def setView (newView: TasksView): VisibleTasks = {
+  def setView (newView: Option[TasksView]): VisibleTasks = {
     view = newView
     loadTasks ()
   }

@@ -3,17 +3,12 @@ package reorganise.client.model
 import diode.Circuit
 import diode.data.Empty
 import diode.react.ReactConnector
-import reorganise.shared.model.TasksView
 
-object ModelController extends Circuit[LoadableModel]  with ReactConnector[LoadableModel] {
-  def initialModel =
-    LoadableModel (Empty, TasksView (includeCompleted = false, -1), ListFeature, showSettings = false)
+object ModelController extends Circuit[LoadableModel] with ReactConnector[LoadableModel] {
+  def initialModel = LoadableModel (Empty)
 
   def actionHandler: ModelController.HandlerFunction =
     composeHandlers (
-      new VisibleTasksUpdater (zoomRW (_.tasks) ((model, value) => model.copy (tasks = value))),
-      new TaskViewUpdater (zoomRW (_.view) ((model, value) => model.copy (view = value))),
-      new TaskFeatureUpdater (zoomRW (_.feature) ((model, value) => model.copy (feature = value))),
-      new ListSettingsUpdater (zoomRW (_.showSettings) ((model, value) => model.copy (showSettings = value)))
+      new ClientStateUpdater (zoomRW (_.data) ((model, value) => model.copy (data = value)))
     )
 }

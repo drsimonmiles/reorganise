@@ -8,7 +8,8 @@ trait TasksAPI {
   def loadTasks (): VisibleTasks
   def updateTask (task: Task): VisibleTasks
   def updateList (list: TaskList): VisibleTasks
+  def updateListOrder (order: Vector[Long]): VisibleTasks
   def deleteTask (taskID: Long): VisibleTasks
   def deleteList (listID: Long): VisibleTasks
-  def setView (view: TasksView): VisibleTasks
+  def setView (view: Option[TasksView]): VisibleTasks
 }

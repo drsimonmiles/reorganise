@@ -23,12 +23,15 @@ object ServerCaller {
   def updateListOnServer (list: TaskList): Future[VisibleTasks] =
     AjaxClient[TasksAPI].updateList (list).call ()
 
+  def updateListOrderOnServer (order: Vector[Long]): Future[VisibleTasks] =
+    AjaxClient[TasksAPI].updateListOrder (order).call ()
+
   def deleteTaskFromServer (taskID: Long): Future[VisibleTasks] =
     AjaxClient[TasksAPI].deleteTask (taskID).call ()
 
   def deleteListFromServer (listID: Long): Future[VisibleTasks] =
     AjaxClient[TasksAPI].deleteList (listID).call ()
 
-  def setView (view: TasksView): Future[VisibleTasks] =
+  def setView (view: Option[TasksView]): Future[VisibleTasks] =
     AjaxClient[TasksAPI].setView (view).call ()
 }
