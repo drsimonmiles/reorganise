@@ -43,7 +43,7 @@ object FeatureControls {
     PriorDaysFeature -> (model => model.value._2.derivation match {
       case Some (PriorToToday (days)) =>
         new QuantityControl[LoadableModel] ().
-          apply (model.zoom (_._2).variable (_.derivation.asInstanceOf[PriorToToday].days, setListPriorDays))
+          apply (model.zoom (_._2).variable (_.derivation.get.asInstanceOf[PriorToToday].days, setListPriorDays))
       case _ => <.span ("")
     })
   )

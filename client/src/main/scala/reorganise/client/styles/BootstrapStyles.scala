@@ -1,7 +1,7 @@
 package reorganise.client.styles
 
-import BootstrapAlertStyles._
 import japgolly.scalajs.react.vdom.prefix_<^._
+import reorganise.client.styles.BootstrapAlertStyles._
 import scalacss.Defaults._
 import scalacss.mutable
 
@@ -72,7 +72,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   val inputNumber = styleWrap ("input-number")
 
   val row = styleWrap ("row")
-  def columns (number: Int) = styleWrap ("col-md-" + number)
+  val columns = (1 to 12).map (n => (n, styleWrap ("col-md-" + n))).toMap
 
   val dropdown = styleWrap ("dropdown")
   val dropdownButton = styleWrap ("dropdown-toggle")
