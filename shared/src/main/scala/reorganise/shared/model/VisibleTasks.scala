@@ -17,7 +17,7 @@ case class VisibleTasks (tasks: Vector[Task], lists: Vector[TaskList]) {
     }
 
   def updatedList (newList: TaskList) =
-    tasks.indexWhere (_.id == newList.id) match {
+    lists.indexWhere (_.id == newList.id) match {
       case -1    => copy (lists = lists :+ newList)
       case index => copy (lists = lists.updated (index, newList))
     }

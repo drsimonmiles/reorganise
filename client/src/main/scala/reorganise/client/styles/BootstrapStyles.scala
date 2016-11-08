@@ -87,4 +87,5 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
     val inputGroup = styleWrap ("input-group")
     val button = styleWrap ("input-group-btn")
   }
+  val _inputGroup = inputGroup
 }

@@ -1,7 +1,7 @@
 package reorganise.client.model
 
 import diode.data.{Pot, Ready}
-import diode.{ActionHandler, Effect, ModelRW}
+import diode.{NoAction, ActionHandler, Effect, ModelRW}
 import reorganise.client.comms.ServerCaller._
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,9 +16,9 @@ class ClientStateUpdater[Model] (data: ModelRW[Model, Pot[ClientState]]) extends
     case UpdateTask (task) =>
       updated (value.map (_.updatedTask (task)), Effect (updateTaskOnServer (task).map (RefreshClientShownTasks)))
     case UpdateList (list) =>
-      updated (value.map (_.updatedList (list)), Effect (updateListOnServer (list).map (RefreshClientShownTasks)))
+      updated (value.map (_.updatedList (list)), Effect (updateListOnServer (list).map (x => NoAction)))
     case UpdateListOrder (order) =>
-      updated (value.map (_.withListOrder (order)), Effect (updateListOrderOnServer (order).map (RefreshClientShownTasks)))
+      updated (value.map (_.withListOrder (order)), Effect (updateListOrderOnServer (order).map (x => NoAction)))
     case DeleteTask (task) =>
       updated (value.map (_.removeTask (task)), Effect (deleteTaskFromServer (task.id).map (RefreshClientShownTasks)))
     case DeleteList (listID) =>
