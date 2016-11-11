@@ -11,5 +11,5 @@ trait TasksAPI {
   def updateListOrder (order: Vector[Long]): VisibleTasks
   def deleteTask (taskID: Long): VisibleTasks
   def deleteList (listID: Long): VisibleTasks
-  def setView (view: Option[TasksView]): VisibleTasks
+  def setView (view: Option[TasksView]): Vector[Task]
 }

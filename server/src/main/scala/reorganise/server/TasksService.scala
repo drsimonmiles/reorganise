@@ -91,7 +91,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
               case None => data.tasks.filter (_.list == tasksView.list)
               case Some (NoTasks) => Vector[Task] ()
               case Some (NoRestriction) => data.tasks
-              case Some (PriorToToday (days) ) => upToDate (data.tasks, LocalDate.now.plusDays (days) )
+              case Some (PriorToToday (days) ) => upToDate (data.tasks, LocalDate.now.plusDays (days))
             }
             val visibleTasks = unordered.
               filter (tasksView.includeCompleted || ! _.completed).
@@ -153,8 +153,8 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case None => emptySharedTasksData
     }
 
-  def setView (newView: Option[TasksView]): VisibleTasks = {
+  def setView (newView: Option[TasksView]): Vector[Task] = {
     view = newView
-    loadTasks ()
+    loadTasks ().tasks
   }
 }

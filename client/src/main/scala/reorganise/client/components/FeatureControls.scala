@@ -22,7 +22,11 @@ object FeatureControls {
   val taskFeatureControl: Map[TaskFeature, ModelPoint[LoadableModel, ((Vector[TaskList], TaskList), Task)] => ReactElement] = Map (
     LabelFeature -> (model =>
       new VariableDropdown[LoadableModel, TaskList] ("label", _.name, primary).
-        apply (model.scopedVariable[Vector[TaskList], Task, TaskList] (_._1._1, _._2, t => model.value._1._1.find (_.id == t.list).get, setTaskList))
+        apply (model.scopedVariable[Vector[TaskList], Task, TaskList] (_._1._1, _._2,
+          t => model.value._1._1.find (_.id == t.list) match {
+            case Some (list) => list
+            case None => ViewedItemsTable.emptyList
+          }, setTaskList))
     ),
     StartFeature -> (model =>
       new DatePicker[LoadableModel].apply (model.zoom (_._2).variable (_.startDate, setTaskStart))),

@@ -22,5 +22,5 @@ case class ClientState (visible: VisibleTasks, view: Option[TasksView], taskFeat
     copy (visible = visible.withListOrder (order))
 
   def viewedList: Option[TaskList] =
-    view.map (current => visible.list (current.list))
+    view.flatMap (current => visible.list (current.list))
 }

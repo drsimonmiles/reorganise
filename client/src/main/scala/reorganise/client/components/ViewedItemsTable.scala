@@ -36,7 +36,8 @@ object ViewedItemsTable {
                   <.div (bss.columns (2),
                     new FixedDropdown[LoadableModel, TaskFeature] ("feature", _.label, warning, taskFeatures).
                       apply (p.zoom (_.taskFeature).variable (ChangeTaskFeature)))),
-                list.order.map (taskID => TaskRow (rowReader.zip (p.zoom (_.visible.task (taskID))))),
+                  list.order.filter (taskID => p.value.visible.task (taskID).isDefined).
+                    map (taskID => TaskRow (rowReader.zip (p.zoom (_.visible.task (taskID).get)))),
                 list.derivation.isEmpty ?= Button (Button.Props (p.dispatch (CreateTask)), plusSquare, " New task"),
                 Button (Button.Props (deleteCurrentList), close, " Delete list"),
                 Button (Button.Props (toggleCompleted), cut, if (includeCompleted) " Hide completed" else " Show completed")
@@ -50,7 +51,7 @@ object ViewedItemsTable {
                   <.div (bss.columns (2),
                     new FixedDropdown[LoadableModel, ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
-                p.value.visible.lists.map (list => ListEditRow (rowReader.zip (p.zoom (_.visible.list (list.id))))),
+                p.value.visible.lists.map (list => ListEditRow (rowReader.zip (p.zoom (_.visible.list (list.id).get)))),
                 Button (Button.Props (p.dispatch (CreateList (false))), plusSquare, " New label list"),
                 Button (Button.Props (p.dispatch (CreateList (true))), plusSquare, " New derived list")
               )

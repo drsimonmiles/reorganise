@@ -1,11 +1,11 @@
 package reorganise.shared.model
 
 case class VisibleTasks (tasks: Vector[Task], lists: Vector[TaskList]) {
-  def task (id: Long): Task =
-    tasks.find (_.id == id).get
+  def task (id: Long): Option[Task] =
+    tasks.find (_.id == id)
 
-  def list (id: Long): TaskList =
-    lists.find (_.id == id).get
+  def list (id: Long): Option[TaskList] =
+    lists.find (_.id == id)
 
   def listOrder: Vector[Long] =
     lists.map (_.id)

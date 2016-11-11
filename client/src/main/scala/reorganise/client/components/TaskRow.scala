@@ -18,7 +18,7 @@ object TaskRow {
   val component = ReactComponentB[Props] ("TaskRow")
     .render_P { p =>
       val task = p.zoom (_._2)
-      val completed = Checkbox (task.variable[Boolean] (_.completed, setTaskCompleted _))
+      val completed = Checkbox (task.variable[Boolean] (_.completed, setTaskCompleted))
       val text = new FocusedTextField ("write task description") (task.variable (_.text, setTaskText))
       val row = <.div (bss.row, <.div (bss.columns (1), completed), <.div (bss.columns (11), compact, text))
       val featureData = p.zoom (m => ((m._1._1._2, m._1._2), m._2))
