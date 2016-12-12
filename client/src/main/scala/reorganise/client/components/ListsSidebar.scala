@@ -30,5 +30,6 @@ object ListsSidebar {
     }.build
 
   def apply (data: ScopedVariable[LoadableModel, Vector[TaskList], Option[TasksView]]) =
-    data.createEditor (component)
+    //data.createEditor (component)
+    component (data)
 }

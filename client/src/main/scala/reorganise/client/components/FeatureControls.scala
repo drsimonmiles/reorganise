@@ -2,12 +2,12 @@ package reorganise.client.components
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.{DatePicker, FixedDropdown, QuantityControl, VariableDropdown}
+import reorganise.client.components.generic.{Dropdown, QuantityControl, ReorderControl}
 import reorganise.client.model.ModelVariables._
-import reorganise.client.model.{DerivationFeature, LabelFeature, ListFeature, LoadableModel, ModelPoint, OrderFeature, PriorDaysFeature, RecurFeature, StartFeature, TaskFeature}
+import reorganise.client.model.{DerivationFeature, LabelFeature, ListFeature, LoadableModel, ModelPoint, OrderFeature, PriorDaysFeature, RecurFeature, StartFeature}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
-import reorganise.shared.model.{Derivation, NoRestriction, NoTasks, PriorToToday, Task, TaskList, VisibleTasks}
+import reorganise.shared.model.{Derivation, NoRestriction, NoTasks, PriorToToday, TaskList, VisibleTasks}
 import scalacss.ScalaCssReact._
 
 object FeatureControls {
@@ -19,29 +19,12 @@ object FeatureControls {
 
   val listFeatures = Vector (OrderFeature, DerivationFeature, PriorDaysFeature)
 
-  val taskFeatureControl: Map[TaskFeature, ModelPoint[LoadableModel, ((Vector[TaskList], TaskList), Task)] => ReactElement] = Map (
-    LabelFeature -> (model =>
-      new VariableDropdown[LoadableModel, TaskList] ("label", _.name, primary).
-        apply (model.scopedVariable[Vector[TaskList], Task, TaskList] (_._1._1, _._2,
-          t => model.value._1._1.find (_.id == t.list) match {
-            case Some (list) => list
-            case None => ViewedItemsTable.emptyList
-          }, setTaskList))
-    ),
-    StartFeature -> (model =>
-      new DatePicker[LoadableModel].apply (model.zoom (_._2).variable (_.startDate, setTaskStart))),
-    RecurFeature -> (model =>
-      RecurControl (model.zoom (_._2).variable (_.recur, setTaskRecur))),
-    OrderFeature -> (model =>
-      new ReorderControl (model.value._2.id).apply (model.zoom (_._1._2).variable (_.order, setListOrder)))
-  )
-
   val listFeatureControl: Map[ListFeature, ModelPoint[LoadableModel, (VisibleTasks, TaskList)] => ReactElement] = Map (
     OrderFeature -> (model =>
-      new ReorderControl (model.value._2.id).apply (model.zoom (_._1).variable (_.listOrder, setAllListsOrder))),
+      new ReorderControl (model.value._2.id).apply (model.zoom (_._1).variable (_.listOrder.map (list => (list, true)), setAllListsOrder))),
     DerivationFeature -> (model =>
       if (model.value._2.derivation.isDefined)
-        new FixedDropdown[LoadableModel, Derivation] ("derivation", _.name, primary, derivations).
+        new Dropdown[LoadableModel, Derivation] ("derivation", _.name, primary, derivations).
           apply (model.zoom (_._2).variable (_.derivation.get, setListDerivation))
       else <.span ("")),
     PriorDaysFeature -> (model => model.value._2.derivation match {

@@ -26,6 +26,8 @@ object TasksScreen {
     Callback.when (scope.props.zoom (_.data).value.isEmpty)(scope.props.dispatch (LoadAllVisibleDataFromServer))
   }.build
 
-  def apply (proxy: ModelPoint[LoadableModel, LoadableModel]) =
-    proxy.createReader (component)
+  def apply (proxy: ModelPoint[LoadableModel, LoadableModel])(implicit feq: diode.FastEq[_ >: LoadableModel]) = {
+    val x = proxy.connect (feq)
+    x (component (_))
+  }
 }

@@ -18,5 +18,6 @@ object Panel {
     ).build
 
   def apply[Model <: AnyRef] (heading: ModelPoint[Model, String], children: ReactNode*) =
-    heading.createReader (component[Model], children)
+    //heading.reader (component[Model], children)
+    component (heading, children)
 }

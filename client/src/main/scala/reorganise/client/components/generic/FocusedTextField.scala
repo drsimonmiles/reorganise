@@ -27,5 +27,6 @@ class FocusedTextField[Model <: AnyRef] (placeholder: String) {
     .build
 
   def apply (variable: Variable[Model, String]) =
-    variable.createEditor (component)
+    //variable.createEditor (component)
+    component (variable)
 }

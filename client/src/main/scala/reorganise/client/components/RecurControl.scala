@@ -19,5 +19,6 @@ object RecurControl {
     }.build
 
   def apply (data: Variable[LoadableModel, Option[Int]]) =
-    data.createEditor (component)
+    //data.createEditor (component)
+    component (data)
 }

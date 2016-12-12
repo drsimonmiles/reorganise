@@ -25,5 +25,6 @@ object ListEditRow {
     }.build
 
   def apply (model: Props): ReactElement =
-    model.createReader (component)
+    //model.reader (component)
+    component (model)
 }

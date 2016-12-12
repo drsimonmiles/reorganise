@@ -24,11 +24,11 @@ object Settings {
   object versions {
     val scala = "2.11.8"
     val scalaDom = "0.9.0"
-    val scalajsReact = "0.11.1"
+    val scalajsReact = "0.11.3"
     val scalaCSS = "0.4.1"
     val autowire = "0.2.5"
     val booPickle = "1.2.4"
-    val diode = "1.0.0"
+    val diode = "1.1.0"
     val react = "15.3.0"
     val jQuery = "1.11.1"      // Bootstrap requires version earlier than 3
     val bootstrap = "3.3.6"    // Newer version does not contain LESS source

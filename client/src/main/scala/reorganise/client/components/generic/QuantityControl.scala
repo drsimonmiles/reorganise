@@ -28,5 +28,6 @@ class QuantityControl[Model <: AnyRef] {
     }.build
 
   def apply (model: Variable[Model, Int]) =
-    model.createEditor (component)
+    //model.createEditor (component)
+    component (model)
 }

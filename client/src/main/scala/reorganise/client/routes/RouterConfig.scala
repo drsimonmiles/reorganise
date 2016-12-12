@@ -8,9 +8,9 @@ object RouterConfig {
   val routes = RouterConfigDsl[ScreenID].buildConfig { dsl =>
     import dsl._
 
-    val taskRoute = staticRoute (root, TasksScreenID) ~> render (
-      TasksScreen (ModelPoint[LoadableModel, LoadableModel] (ModelController.zoom (x => x), ModelController))
-    )
+    val taskRoute = staticRoute (root, TasksScreenID) ~> render {
+      TasksScreen (ModelPoint [LoadableModel, LoadableModel](ModelController.zoom (x => x), ModelController))
+    }
     val errorRoute = staticRoute (root, ErrorScreenID) ~> render (ErrorScreen ())
 
     (taskRoute | errorRoute).notFound (redirectToPage (ErrorScreenID)(Redirect.Replace))

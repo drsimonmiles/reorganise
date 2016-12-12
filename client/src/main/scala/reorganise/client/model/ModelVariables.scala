@@ -10,9 +10,9 @@ object ModelVariables {
   def setTaskRecur (task: Task, recur: Option[Int]) = UpdateTask (task.copy (recur = recur))
 
   def setListName (list: TaskList, name: String) = UpdateList (list.copy (name = name))
-  def setListOrder (list: TaskList, order: Vector[Long]) = UpdateList (list.copy (order = order))
+  def setListOrder (list: TaskList, order: Vector[(Long, Boolean)]) = UpdateList (list.copy (order = order.map (_._1)))
   def setListDerivation (list: TaskList, derivation: Derivation) = UpdateList (list.copy (derivation = Some (derivation)))
   def setListPriorDays (list: TaskList, days: Int) = UpdateList (list.copy (derivation = Some (PriorToToday (days))))
 
-  def setAllListsOrder (visible: VisibleTasks, order: Vector[Long]) = UpdateListOrder (order)
+  def setAllListsOrder (visible: VisibleTasks, order: Vector[(Long, Boolean)]) = UpdateListOrder (order.map (_._1))
 }

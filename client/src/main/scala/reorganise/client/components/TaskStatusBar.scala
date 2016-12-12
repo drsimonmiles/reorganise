@@ -3,7 +3,7 @@ package reorganise.client.components
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls.{listFeatures, rowWithFeature, taskFeatures}
-import reorganise.client.components.generic.FixedDropdown
+import reorganise.client.components.generic.Dropdown
 import reorganise.client.model.generic.ScopedVariable
 import reorganise.client.model.{Feature, LoadableModel}
 import reorganise.client.styles.BootstrapAlertStyles.warning
@@ -14,12 +14,13 @@ object TaskStatusBar {
     .render_P { p =>
       rowWithFeature (
         <.span (""),
-        new FixedDropdown[LoadableModel, Feature] ("feature", _.label, warning,
+        new Dropdown[LoadableModel, Feature] ("feature", _.label, warning,
           if (p.scope) taskFeatures else listFeatures).
           apply (p.variableOnly)
       )
     }.build
 
   def apply (data: ScopedVariable[LoadableModel, Boolean, Feature]) =
-    data.createEditor (component)
+    //data.createEditor (component)
+    component (data)
 }

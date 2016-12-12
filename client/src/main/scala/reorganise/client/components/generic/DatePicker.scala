@@ -12,7 +12,7 @@ class DatePicker[Model <: AnyRef] {
     todayHighlight (true).
     todayBtnLinked ().
     disableTouchKeyboard (true).
-    orientation (Orientation.Top)
+    orientation (Orientation.Top)._result
 
   class Backend (t: BackendScope[Variable[Model, String], Unit]) {
     def render (p: Variable[Model, String]) =
@@ -29,5 +29,6 @@ class DatePicker[Model <: AnyRef] {
     .build
 
   def apply (data: Variable[Model, String]) =
-    data.createEditor (component)
+    //data.createEditor (component)
+    component (data)
 }

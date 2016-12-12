@@ -18,5 +18,6 @@ class NamedPanel[Model <: AnyRef] (headerPlaceholder: String) {
     ).build
 
   def apply (header: Variable[Model, String], children: ReactNode*) =
-    header.createEditor (component, children: _*)
+    //header.createEditor (component, children: _*)
+    component (header, children)
 }

@@ -2,6 +2,7 @@ package reorganise.server
 
 import java.io.{FileWriter, PrintWriter, File}
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import reorganise.server.model.TasksData
 import reorganise.server.model.Readers._
@@ -50,8 +51,12 @@ class TasksService (tasksFile: String) extends TasksAPI {
     loadTasks ()
   }
 
-  private def startLocalDate (task: Task) =
-    LocalDate.parse (task.startDate)
+  private def startLocalDate (task: Task): LocalDate =
+    try {
+      LocalDate.parse (task.startDate)
+    } catch {
+      case invalid: DateTimeParseException => LocalDate.now
+    }
 
   private def upToDate (tasks: Vector[Task], toDate: LocalDate): Vector[Task] =
     tasks.filter (task => toDate.isAfter (startLocalDate (task)) || toDate.isEqual (startLocalDate (task)))
@@ -94,8 +99,8 @@ class TasksService (tasksFile: String) extends TasksAPI {
               case Some (PriorToToday (days) ) => upToDate (data.tasks, LocalDate.now.plusDays (days))
             }
             val visibleTasks = unordered.
-              filter (tasksView.includeCompleted || ! _.completed).
-              sorted (listOrdering (list.order) )
+              filter (tasksView.includeCompleted || !_.completed).
+              sorted (listOrdering (list.order))
             VisibleTasks (visibleTasks, data.lists)
           case None =>
             VisibleTasks (Vector[Task] (), data.lists)
