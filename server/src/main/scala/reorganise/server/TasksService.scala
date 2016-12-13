@@ -28,12 +28,20 @@ class TasksService (tasksFile: String) extends TasksAPI {
         if (file.exists) {
           val source = Source.fromFile (file).getLines.mkString
           Json.parse (source).validate [TasksData] match {
-            case s: JsSuccess[TasksData] => Some (s.get)
+            case s: JsSuccess[TasksData] => Some (clean (s.get))
             case e: JsError => println ("Unable to load tasks: " + e.errors); None
           }
         } else Some (emptyDatabase)
       }
     cache
+  }
+
+  private def clean (data: TasksData): TasksData = {
+    val taskIDs = data.tasks.map (_.id)
+    val cleanLists = data.lists.map { list =>
+      list.copy (order = list.order.intersect (taskIDs) ++ taskIDs.diff (list.order))
+    }
+    data.copy (lists = cleanLists)
   }
 
   private def lookupList (id: Long): TaskList =

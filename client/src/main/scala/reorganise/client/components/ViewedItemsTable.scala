@@ -29,7 +29,6 @@ object ViewedItemsTable {
               val toggleCompleted: Callback =
                 p.dispatch (ChangeView (p.value.view.map (_.copy (includeCompleted = !includeCompleted))))
 
-              println ("visible tasks: " + p.value.visible.tasks.size)
               <.div (bss.listGroup.listGroup,
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
@@ -46,9 +45,9 @@ object ViewedItemsTable {
               val rowReader = p.zoom (_.listFeature, _.visible)
               <.div (bss.listGroup.listGroup,
                 <.div (bss.row, compact,
-                  <.div (bss.columns (10), <.span ("llll")),
+                  <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
-                    new Dropdown[LoadableModel, ListFeature]("feature", _.label, warning, listFeatures).
+                    new Dropdown[LoadableModel, ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
                 p.value.visible.lists.map (list => ListEditRow (rowReader.zip (p.zoom (_.visible.list (list.id).get)))),
                 Button (Button.Props (p.dispatch (CreateList (false))), plusSquare, " New label list"),
@@ -60,6 +59,5 @@ object ViewedItemsTable {
     }.build
 
   def apply (data: ModelPoint[LoadableModel, ClientState]) =
-    //data.reader (component)
     component (data)
 }

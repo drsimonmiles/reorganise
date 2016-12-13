@@ -7,7 +7,7 @@ object ModelOps {
     state.view.exists (_.includeCompleted || !task.completed)
 
   def orderWithVisibility (state: ClientState, order: Vector[Long]): Vector[(Long, Boolean)] =
-    order.flatMap { taskID =>
-      state.visible.task (taskID).map (task => (taskID, visible (state, task)))
+    order.map { taskID =>
+      state.visible.task (taskID).map (task => (taskID, visible (state, task))).getOrElse ((taskID, false))
     }
 }
