@@ -6,6 +6,7 @@ import reorganise.client.components.generic.Icon._
 import reorganise.client.model.generic.Variable
 import reorganise.client.styles.GlobalStyles._
 
+//noinspection TypeAnnotation
 class ReorderControl[Model <: AnyRef, Item] (item: Item) {
   @inline private def bss = bootstrapStyles
 
@@ -26,7 +27,7 @@ class ReorderControl[Model <: AnyRef, Item] (item: Item) {
       def moveDownOne =
         if (index >= 0 && index < order.size - 1) {
           val next = order.drop (index + 1).takeWhile (!_._2).size + index + 1
-          (order.take (index) ++ order.slice (index + 1, next) :+ order (index)) ++ order.drop (next + 1)
+          (order.take (index) ++ order.slice (index + 1, next + 1) :+ order (index)) ++ order.drop (next + 1)
         } else order
       def moveDownAll =
         if (index >= 0 && index < order.size - 1) order.take (index) ++ order.drop (index + 1) :+ order (index)
