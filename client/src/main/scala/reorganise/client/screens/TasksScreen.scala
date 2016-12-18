@@ -16,8 +16,8 @@ object TasksScreen {
       p.value.data match {
         case Ready (data) =>
           <.div (bss.row,
-            <.div (bss.columns (2), ListsSidebar (p.zoom (_.data.get.view).
-              scopedVariable (p.zoom (_.data.get.visible.lists), ChangeView))),
+            <.div (bss.columns (2), ListsSidebar (p.value.data.get.visible.lists,
+              p.zoom (_.data.get.view).variable (ChangeView))),
             <.div (bss.columns (10), ViewedItemsTable (p.zoom (_.data.get)))
           )
         case _ => <.div ("Loading...")

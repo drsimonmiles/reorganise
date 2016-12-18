@@ -1,8 +1,8 @@
 package reorganise.client.model
 
-import diode.{ModelRO, Action, Circuit, FastEq, ModelR}
+import diode.{Action, Circuit, FastEq, ModelR, ModelRO}
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactElement, _}
-import reorganise.client.model.generic.{ScopedVariable, Variable}
+import reorganise.client.model.generic.Variable
 import scala.scalajs.js
 
 case class ModelPoint[Model <: AnyRef, Point] (data: ModelR[Model, Point], circuit: Circuit[Model]) {
@@ -21,7 +21,7 @@ case class ModelPoint[Model <: AnyRef, Point] (data: ModelR[Model, Point], circu
   def dispatch (action: Action): Callback =
     Callback (circuit.dispatch (action))
 
-  def scopedVariable[Scope, Var] (scope: ModelPoint[Model, Scope], variable: Variable[Model, Var])
+/*  def scopedVariable[Scope, Var] (scope: ModelPoint[Model, Scope], variable: Variable[Model, Var])
                                  (implicit feqS: diode.FastEq[_ >: Scope], feqV: diode.FastEq[_ >: Var]): ScopedVariable[Model, Scope, Var] =
     ScopedVariable[Model, Scope, Var] (scope.zip (variable.model), variable.update)
 
@@ -32,7 +32,7 @@ case class ModelPoint[Model <: AnyRef, Point] (data: ModelR[Model, Point], circu
   def scopedVariable[Scope, Owner, Var] (getScope: Point => Scope, getOwner: Point => Owner, getVar: Owner => Var,  update: (Owner, Var) => Action)
                                         (implicit feqS: diode.FastEq[_ >: Scope], feqO: diode.FastEq[_ >: Owner], feqV: diode.FastEq[_ >: Var]): ScopedVariable[Model, Scope, Var] =
     scopedVariable (zoom (getScope), zoom (getOwner).variable (getVar, update))
-
+*/
   def value: Point =
     data.value
 

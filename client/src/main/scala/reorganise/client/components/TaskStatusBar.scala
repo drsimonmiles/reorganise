@@ -4,23 +4,23 @@ import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls.{listFeatures, rowWithFeature, taskFeatures}
 import reorganise.client.components.generic.Dropdown
-import reorganise.client.model.generic.ScopedVariable
+import reorganise.client.model.generic.Variable
 import reorganise.client.model.{Feature, LoadableModel}
 import reorganise.client.styles.BootstrapAlertStyles.warning
-import reorganise.client.styles.GlobalStyles._
 
 object TaskStatusBar {
-  val component = ReactComponentB[ScopedVariable[LoadableModel, Boolean, Feature]] ("TaskStatusBar")
+  case class Props (isTasksView: Boolean, feature: Variable[LoadableModel, Feature])
+
+  val component = ReactComponentB[Props] ("TaskStatusBar")
     .render_P { p =>
       rowWithFeature (
         <.span (""),
         new Dropdown[Feature] ("feature", _.label, warning,
-          if (p.scope) taskFeatures else listFeatures).
-          apply (p.variableOnly)
+          if (p.isTasksView) taskFeatures else listFeatures).
+          apply (p.feature)
       )
     }.build
 
-  def apply (data: ScopedVariable[LoadableModel, Boolean, Feature]) =
-    //data.createEditor (component)
-    component (data)
+  def apply (isTasksView: Boolean, feature: Variable[LoadableModel, Feature]) =
+    component (Props (isTasksView, feature))
 }
