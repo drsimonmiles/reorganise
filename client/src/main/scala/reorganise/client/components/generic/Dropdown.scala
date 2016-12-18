@@ -6,11 +6,11 @@ import reorganise.client.model.generic.Variable
 import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
 import scalacss.ScalaCssReact._
 
-class Dropdown[Model <: AnyRef, Item] (fieldID: String, label: Item => String,
-                                       style: BootstrapAlertStyles.Value, items: Seq[Item]) {
+class Dropdown[Item] (fieldID: String, label: Item => String,
+                      style: BootstrapAlertStyles.Value, items: Seq[Item]) {
   def bss = GlobalStyles.bootstrapStyles
 
-  val component = ReactComponentB[Variable[Model, Item]] ("Dropdown")
+  val component = ReactComponentB[Variable[_, Item]] ("Dropdown")
     .render_P (p =>
       <.div (bss.dropdown, ^.id := fieldID,
         <.button (bss.buttonOpt (style), bss.dropdownButton, ^.tpe := "button", bss.dataToggle := "dropdown",
@@ -21,7 +21,7 @@ class Dropdown[Model <: AnyRef, Item] (fieldID: String, label: Item => String,
       )
     ).build
 
-  def apply (data: Variable[Model, Item])(implicit feq: diode.FastEq[_ >: Item]): ReactElement =
+  def apply (data: Variable[_, Item])(implicit feq: diode.FastEq[_ >: Item]): ReactElement =
     //data.createEditor (component)
     component (data)
 }

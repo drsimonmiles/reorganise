@@ -14,7 +14,7 @@ object TaskStatusBar {
     .render_P { p =>
       rowWithFeature (
         <.span (""),
-        new Dropdown[LoadableModel, Feature] ("feature", _.label, warning,
+        new Dropdown[Feature] ("feature", _.label, warning,
           if (p.scope) taskFeatures else listFeatures).
           apply (p.variableOnly)
       )

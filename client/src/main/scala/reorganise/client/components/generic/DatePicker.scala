@@ -6,7 +6,7 @@ import org.querki.facades.bootstrap.datepicker._
 import org.querki.jquery._
 import reorganise.client.model.generic.Variable
 
-class DatePicker[Model <: AnyRef] {
+class DatePicker {
   val baseOpts = BootstrapDatepickerOptions.
     autoclose (true).
     todayHighlight (true).
@@ -14,21 +14,20 @@ class DatePicker[Model <: AnyRef] {
     disableTouchKeyboard (true).
     orientation (Orientation.Top)._result
 
-  class Backend (t: BackendScope[Variable[Model, String], Unit]) {
-    def render (p: Variable[Model, String]) =
+  class Backend (t: BackendScope[Variable[_, String], Unit]) {
+    def render (p: Variable[_, String]) =
       <.input (^.tpe := "text", ^.value := p.value,
         ^.onChange ==> { event: ReactEventI => p.set (event.target.value)}
       )
   }
 
-  val component = ReactComponentB[Variable[Model, String]] ("DatePicker")
+  val component = ReactComponentB[Variable[_, String]] ("DatePicker")
     .renderBackend[Backend]
     .componentDidMount (scope => Callback {
       $ (scope.getDOMNode ()).datepicker (baseOpts)
     })
     .build
 
-  def apply (data: Variable[Model, String]) =
-    //data.createEditor (component)
+  def apply (data: Variable[_, String]) =
     component (data)
 }

@@ -7,10 +7,10 @@ import reorganise.client.model.generic.Variable
 import reorganise.client.styles.GlobalStyles._
 
 //noinspection TypeAnnotation
-class ReorderControl[Model <: AnyRef, Item] (item: Item) {
+class ReorderControl[Item] (item: Item) {
   @inline private def bss = bootstrapStyles
 
-  val component = ReactComponentB[Variable[Model, Vector[(Item, Boolean)]]] ("ReorderControl")
+  val component = ReactComponentB[Variable[_, Vector[(Item, Boolean)]]] ("ReorderControl")
     .render_P { p =>
       val order = p.value
       val index = order.indexWhere (_._1 == item)
@@ -41,6 +41,6 @@ class ReorderControl[Model <: AnyRef, Item] (item: Item) {
       )
     }.build
 
-  def apply (data: Variable[Model, Vector[(Item, Boolean)]]) =
+  def apply (data: Variable[_, Vector[(Item, Boolean)]]) =
     component (data)
 }

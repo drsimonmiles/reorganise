@@ -8,10 +8,10 @@ import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
 import scalacss.ScalaCssReact._
 
-class QuantityControl[Model <: AnyRef] {
+class QuantityControl {
   @inline private def bss = bootstrapStyles
 
- val component = ReactComponentB[Variable[Model, Int]] ("QuantityControl")
+ val component = ReactComponentB[Variable[_, Int]] ("QuantityControl")
     .render_P { p =>
       def button (icon: Icon, increment: Int) =
         <.span (bss.inputGroup.button,
@@ -27,7 +27,6 @@ class QuantityControl[Model <: AnyRef] {
       )
     }.build
 
-  def apply (model: Variable[Model, Int]) =
-    //model.createEditor (component)
+  def apply (model: Variable[_, Int]) =
     component (model)
 }

@@ -24,12 +24,12 @@ object FeatureControls {
       new ReorderControl (model.value._2.id).apply (model.zoom (_._1).variable (_.listOrder.map (list => (list, true)), setAllListsOrder))),
     DerivationFeature -> (model =>
       if (model.value._2.derivation.isDefined)
-        new Dropdown[LoadableModel, Derivation] ("derivation", _.name, primary, derivations).
+        new Dropdown[Derivation] ("derivation", _.name, primary, derivations).
           apply (model.zoom (_._2).variable (_.derivation.get, setListDerivation))
       else <.span ("")),
     PriorDaysFeature -> (model => model.value._2.derivation match {
-      case Some (PriorToToday (days)) =>
-        new QuantityControl[LoadableModel] ().
+      case Some (PriorToToday (_)) =>
+        new QuantityControl ().
           apply (model.zoom (_._2).variable (_.derivation.get.asInstanceOf[PriorToToday].days, setListPriorDays))
       case _ => <.span ("")
     })

@@ -26,13 +26,13 @@ object TaskRow {
       val row = <.div (bss.row, <.div (bss.columns (1), completed), <.div (bss.columns (11), compact, text))
       val control = p.feature match {
         case LabelFeature =>
-          new Dropdown[LoadableModel, TaskList] ("label", _.name, primary, p.state.value.visible.lists).
+          new Dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists).
             apply (p.task.variable (t => p.state.value.visible.list (t.list) match {
               case Some (list) => list
               case None => ViewedItemsTable.emptyList
             }, setTaskList))
         case StartFeature =>
-          new DatePicker[LoadableModel].apply (p.task.variable (_.startDate, setTaskStart))
+          new DatePicker ().apply (p.task.variable (_.startDate, setTaskStart))
         case RecurFeature =>
           RecurControl (p.task.variable (_.recur, setTaskRecur))
         case OrderFeature =>

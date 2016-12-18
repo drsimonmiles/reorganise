@@ -9,7 +9,7 @@ import scalacss.ScalaCssReact._
 object Panel {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  def component[Model <: AnyRef] = ReactComponentB[ModelPoint[Model, String]]("Panel")
+  def component = ReactComponentB[ModelPoint[_, String]]("Panel")
     .renderPC ((_, p, c) =>
       <.div (bss.panel,
         <.div (bss.panelHeading, p.value),
@@ -18,6 +18,5 @@ object Panel {
     ).build
 
   def apply[Model <: AnyRef] (heading: ModelPoint[Model, String], children: ReactNode*) =
-    //heading.reader (component[Model], children)
     component (heading, children)
 }

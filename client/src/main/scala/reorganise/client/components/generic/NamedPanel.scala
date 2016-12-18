@@ -6,10 +6,10 @@ import reorganise.client.model.generic.Variable
 import reorganise.client.styles.GlobalStyles
 import scalacss.ScalaCssReact._
 
-class NamedPanel[Model <: AnyRef] (headerPlaceholder: String) {
+class NamedPanel (headerPlaceholder: String) {
   @inline private def bss = GlobalStyles.bootstrapStyles
 
-  val component = ReactComponentB[Variable[Model, String]]("NamedPanel")
+  val component = ReactComponentB[Variable[_, String]]("NamedPanel")
     .renderPC ((_, p, c) =>
       <.div (bss.panel,
         <.div (bss.panelHeading, new FocusedTextField (headerPlaceholder) (p)),
@@ -17,7 +17,6 @@ class NamedPanel[Model <: AnyRef] (headerPlaceholder: String) {
       )
     ).build
 
-  def apply (header: Variable[Model, String], children: ReactNode*) =
-    //header.createEditor (component, children: _*)
+  def apply (header: Variable[_, String], children: ReactNode*) =
     component (header, children)
 }

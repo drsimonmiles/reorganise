@@ -33,7 +33,7 @@ object ViewedItemsTable {
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
-                    new Dropdown[LoadableModel, TaskFeature] ("feature", _.label, warning, taskFeatures).
+                    new Dropdown[TaskFeature] ("feature", _.label, warning, taskFeatures).
                       apply (p.zoom (_.taskFeature).variable (ChangeTaskFeature)))),
                   list.order.filter (taskID => p.value.visible.task (taskID).isDefined).
                     map (taskID => TaskRow (TaskRow.Props (p, p.zoom (_.visible.task (taskID).get), p.value.taskFeature))),
@@ -47,7 +47,7 @@ object ViewedItemsTable {
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
-                    new Dropdown[LoadableModel, ListFeature] ("feature", _.label, warning, listFeatures).
+                    new Dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
                 p.value.visible.lists.map (list => ListEditRow (rowReader.zip (p.zoom (_.visible.list (list.id).get)))),
                 Button (Button.Props (p.dispatch (CreateList (false))), plusSquare, " New label list"),
