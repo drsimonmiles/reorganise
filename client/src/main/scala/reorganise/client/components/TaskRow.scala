@@ -5,6 +5,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls.rowWithFeature
 import reorganise.client.components.generic.{Checkbox, DatePicker, Dropdown, FocusedTextField, ReorderControl}
+import reorganise.client.components.generic.BasicComponents._
 import reorganise.client.model.generic.VariableOps._
 import reorganise.client.model.ModelOps._
 import reorganise.client.model.ModelVariables._
@@ -19,18 +20,25 @@ object TaskRow {
 
   case class Props (state: ModelProxy[ClientState], task: ModelProxy[Task], feature: TaskFeature)
 
+  private val textField = focusedTextField ("write task description")
+
   val component = ReactComponentB[Props] ("TaskRow")
     .render_P { p =>
-      val completed = Checkbox (p.task.variable[Boolean] (_.completed, setTaskCompleted))
-      val text = new FocusedTextField ("write task description") (p.task.variable (_.text, setTaskText))
+      val completed = p.task.editor (_.completed, setTaskCompleted, checkbox) //Checkbox (p.task.variable[Boolean] (_.completed, setTaskCompleted))
+      //val text = new FocusedTextField ("write task description") (p.task.variable (_.text, setTaskText))
+      val text = p.task.editor (_.text, setTaskText, textField)
       val row = <.div (bss.row, <.div (bss.columns (1), completed), <.div (bss.columns (11), compact, text))
       val control = p.feature match {
         case LabelFeature =>
-          new Dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists).
+          p.task.editor (t => p.state.value.visible.list (t.list) match {
+            case Some (list) => list
+            case None => ViewedItemsTable.emptyList
+          }, setTaskList, dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists))
+          /*new Dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists).
             apply (p.task.variable (t => p.state.value.visible.list (t.list) match {
               case Some (list) => list
               case None => ViewedItemsTable.emptyList
-            }, setTaskList))
+            }, setTaskList))*/
         case StartFeature =>
           new DatePicker ().apply (p.task.variable (_.startDate, setTaskStart))
         case RecurFeature =>
