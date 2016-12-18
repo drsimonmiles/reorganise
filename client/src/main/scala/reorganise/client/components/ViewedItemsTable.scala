@@ -42,14 +42,14 @@ object ViewedItemsTable {
                 Button (Button.Props (toggleCompleted), cut, if (includeCompleted) " Hide completed" else " Show completed")
               )
             case None =>
-              val rowReader = p.zoom (_.listFeature, _.visible)
               <.div (bss.listGroup.listGroup,
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
                     new Dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
-                p.value.visible.lists.map (list => ListEditRow (rowReader.zip (p.zoom (_.visible.list (list.id).get)))),
+                p.value.visible.lists.map (list =>
+                  ListEditRow (p.value.listFeature, p.zoom (_.visible), p.zoom (_.visible.list (list.id).get))),
                 Button (Button.Props (p.dispatch (CreateList (false))), plusSquare, " New label list"),
                 Button (Button.Props (p.dispatch (CreateList (true))), plusSquare, " New derived list")
               )
