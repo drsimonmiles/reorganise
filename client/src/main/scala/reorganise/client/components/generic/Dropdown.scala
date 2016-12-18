@@ -2,7 +2,7 @@ package reorganise.client.components.generic
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.model.generic.Variable
+import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
 import scalacss.ScalaCssReact._
 
@@ -10,7 +10,7 @@ class Dropdown[Item] (fieldID: String, label: Item => String,
                       style: BootstrapAlertStyles.Value, items: Seq[Item]) {
   def bss = GlobalStyles.bootstrapStyles
 
-  val component = ReactComponentB[Variable[_, Item]] ("Dropdown")
+  val component = ReactComponentB[DiodeVariable[Item]] ("Dropdown")
     .render_P (p =>
       <.div (bss.dropdown, ^.id := fieldID,
         <.button (bss.buttonOpt (style), bss.dropdownButton, ^.tpe := "button", bss.dataToggle := "dropdown",
@@ -21,7 +21,6 @@ class Dropdown[Item] (fieldID: String, label: Item => String,
       )
     ).build
 
-  def apply (data: Variable[_, Item])(implicit feq: diode.FastEq[_ >: Item]): ReactElement =
-    //data.createEditor (component)
+  def apply (data: DiodeVariable[Item]): ReactElement =
     component (data)
 }

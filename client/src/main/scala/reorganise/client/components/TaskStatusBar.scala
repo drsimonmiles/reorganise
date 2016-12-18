@@ -4,12 +4,12 @@ import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls.{listFeatures, rowWithFeature, taskFeatures}
 import reorganise.client.components.generic.Dropdown
-import reorganise.client.model.generic.Variable
-import reorganise.client.model.{Feature, LoadableModel}
+import reorganise.client.model.Feature
+import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.BootstrapAlertStyles.warning
 
 object TaskStatusBar {
-  case class Props (isTasksView: Boolean, feature: Variable[LoadableModel, Feature])
+  case class Props (isTasksView: Boolean, feature: DiodeVariable[Feature])
 
   val component = ReactComponentB[Props] ("TaskStatusBar")
     .render_P { p =>
@@ -21,6 +21,6 @@ object TaskStatusBar {
       )
     }.build
 
-  def apply (isTasksView: Boolean, feature: Variable[LoadableModel, Feature]) =
+  def apply (isTasksView: Boolean, feature: DiodeVariable[Feature]) =
     component (Props (isTasksView, feature))
 }

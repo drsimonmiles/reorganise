@@ -1,19 +1,20 @@
 package reorganise.client.components
 
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls._
 import reorganise.client.components.generic.{Dropdown, FocusedTextField, QuantityControl, ReorderControl}
 import reorganise.client.model.ModelVariables._
-import reorganise.client.model.{DerivationFeature, ListFeature, LoadableModel, ModelPoint, OrderFeature, PriorDaysFeature}
+import reorganise.client.model.generic.VariableOps._
+import reorganise.client.model.{DerivationFeature, ListFeature, OrderFeature, PriorDaysFeature}
 import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{Derivation, PriorToToday, TaskList, VisibleTasks}
 import scalacss.ScalaCssReact._
 
 object ListEditRow {
-  case class Props (feature: ListFeature, visible: ModelPoint[LoadableModel, VisibleTasks],
-                    list: ModelPoint[LoadableModel, TaskList])
+  case class Props (feature: ListFeature, visible: ModelProxy[VisibleTasks], list: ModelProxy[TaskList])
 
   val component = ReactComponentB[Props] ("ListEditRow")
     .render_P { p =>
@@ -38,7 +39,6 @@ object ListEditRow {
       rowWithFeature (row, feature)
     }.build
 
-  def apply (feature: ListFeature, visible: ModelPoint[LoadableModel, VisibleTasks],
-             list: ModelPoint[LoadableModel, TaskList]): ReactElement =
+  def apply (feature: ListFeature, visible: ModelProxy[VisibleTasks], list: ModelProxy[TaskList]): ReactElement =
     component (Props (feature, visible, list))
 }

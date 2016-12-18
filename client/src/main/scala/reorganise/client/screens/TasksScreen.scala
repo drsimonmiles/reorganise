@@ -1,17 +1,19 @@
 package reorganise.client.screens
 
 import diode.data.Ready
+import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
 import reorganise.client.components.{ListsSidebar, ViewedItemsTable}
-import reorganise.client.model.{ChangeView, LoadableModel, ModelPoint, LoadAllVisibleDataFromServer}
+import reorganise.client.model.generic.VariableOps._
+import reorganise.client.model.{ChangeView, LoadAllVisibleDataFromServer, LoadableModel}
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
 import scalacss.ScalaCssReact._
 
 object TasksScreen {
   @inline private def bss = bootstrapStyles
 
-  val component = ReactComponentB [ModelPoint[LoadableModel, LoadableModel]]("TaskScreen")
+  val component = ReactComponentB [ModelProxy[LoadableModel]]("TaskScreen")
     .render_P { p =>
       p.value.data match {
         case Ready (data) =>
@@ -23,11 +25,6 @@ object TasksScreen {
         case _ => <.div ("Loading...")
       }
     }.componentDidMount { scope =>
-    Callback.when (scope.props.zoom (_.data).value.isEmpty)(scope.props.dispatch (LoadAllVisibleDataFromServer))
+    Callback.when (scope.props.zoom (_.data).value.isEmpty)(scope.props.dispatchCB (LoadAllVisibleDataFromServer))
   }.build
-
-  def apply (proxy: ModelPoint[LoadableModel, LoadableModel])(implicit feq: diode.FastEq[_ >: LoadableModel]) = {
-    val x = proxy.connect (feq)
-    x (component (_))
-  }
 }

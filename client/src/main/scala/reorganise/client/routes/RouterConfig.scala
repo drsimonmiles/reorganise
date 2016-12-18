@@ -1,7 +1,7 @@
 package reorganise.client.routes
 
 import japgolly.scalajs.react.extra.router.{Redirect, RouterConfigDsl}
-import reorganise.client.model.{ModelPoint, LoadableModel, ModelController}
+import reorganise.client.model.ModelController
 import reorganise.client.screens.{ErrorScreen, GlobalLayout, TasksScreen}
 
 object RouterConfig {
@@ -9,7 +9,8 @@ object RouterConfig {
     import dsl._
 
     val taskRoute = staticRoute (root, TasksScreenID) ~> render {
-      TasksScreen (ModelPoint [LoadableModel, LoadableModel](ModelController.zoom (x => x), ModelController))
+      val y = ModelController.connect (x => x)
+      y (TasksScreen.component (_))
     }
     val errorRoute = staticRoute (root, ErrorScreenID) ~> render (ErrorScreen ())
 

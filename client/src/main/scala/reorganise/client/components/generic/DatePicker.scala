@@ -4,7 +4,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.querki.facades.bootstrap.datepicker._
 import org.querki.jquery._
-import reorganise.client.model.generic.Variable
+import reorganise.client.model.generic.DiodeVariable
 
 class DatePicker {
   val baseOpts = BootstrapDatepickerOptions.
@@ -14,20 +14,20 @@ class DatePicker {
     disableTouchKeyboard (true).
     orientation (Orientation.Top)._result
 
-  class Backend (t: BackendScope[Variable[_, String], Unit]) {
-    def render (p: Variable[_, String]) =
+  class Backend (t: BackendScope[DiodeVariable[String], Unit]) {
+    def render (p: DiodeVariable[String]) =
       <.input (^.tpe := "text", ^.value := p.value,
         ^.onChange ==> { event: ReactEventI => p.set (event.target.value)}
       )
   }
 
-  val component = ReactComponentB[Variable[_, String]] ("DatePicker")
+  val component = ReactComponentB[DiodeVariable[String]] ("DatePicker")
     .renderBackend[Backend]
     .componentDidMount (scope => Callback {
       $ (scope.getDOMNode ()).datepicker (baseOpts)
     })
     .build
 
-  def apply (data: Variable[_, String]) =
+  def apply (data: DiodeVariable[String]) =
     component (data)
 }

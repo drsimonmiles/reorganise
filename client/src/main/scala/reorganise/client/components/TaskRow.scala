@@ -1,12 +1,14 @@
 package reorganise.client.components
 
+import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls.rowWithFeature
 import reorganise.client.components.generic.{Checkbox, DatePicker, Dropdown, FocusedTextField, ReorderControl}
+import reorganise.client.model.generic.VariableOps._
 import reorganise.client.model.ModelOps._
 import reorganise.client.model.ModelVariables._
-import reorganise.client.model.{ClientState, LabelFeature, LoadableModel, ModelPoint, OrderFeature, RecurFeature, StartFeature, TaskFeature}
+import reorganise.client.model.{ClientState, LabelFeature, LoadableModel, OrderFeature, RecurFeature, StartFeature, TaskFeature}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{Task, TaskList}
@@ -15,9 +17,7 @@ import scalacss.ScalaCssReact._
 object TaskRow {
   @inline private def bss = bootstrapStyles
 
-  case class Props (state: ModelPoint[LoadableModel, ClientState],
-                    task: ModelPoint[LoadableModel, Task],
-                    feature: TaskFeature)
+  case class Props (state: ModelProxy[ClientState], task: ModelProxy[Task], feature: TaskFeature)
 
   val component = ReactComponentB[Props] ("TaskRow")
     .render_P { p =>
@@ -46,6 +46,6 @@ object TaskRow {
       rowWithFeature (row, control)
     }.build
 
-  def apply (model: Props): ReactElement =
-    component (model)
+  def apply (state: ModelProxy[ClientState], task: ModelProxy[Task], feature: TaskFeature): ReactElement =
+    component (Props (state, task, feature))
 }

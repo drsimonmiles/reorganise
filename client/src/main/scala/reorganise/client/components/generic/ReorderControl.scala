@@ -3,14 +3,14 @@ package reorganise.client.components.generic
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.generic.Icon._
-import reorganise.client.model.generic.Variable
+import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.GlobalStyles._
 
 //noinspection TypeAnnotation
 class ReorderControl[Item] (item: Item) {
   @inline private def bss = bootstrapStyles
 
-  val component = ReactComponentB[Variable[_, Vector[(Item, Boolean)]]] ("ReorderControl")
+  val component = ReactComponentB[DiodeVariable[Vector[(Item, Boolean)]]] ("ReorderControl")
     .render_P { p =>
       val order = p.value
       val index = order.indexWhere (_._1 == item)
@@ -41,6 +41,6 @@ class ReorderControl[Item] (item: Item) {
       )
     }.build
 
-  def apply (data: Variable[_, Vector[(Item, Boolean)]]) =
+  def apply (data: DiodeVariable[Vector[(Item, Boolean)]]) =
     component (data)
 }

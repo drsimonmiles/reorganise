@@ -3,7 +3,7 @@ package reorganise.client.components.generic
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.generic.Icon._
-import reorganise.client.model.generic.Variable
+import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
 import scalacss.ScalaCssReact._
@@ -11,7 +11,7 @@ import scalacss.ScalaCssReact._
 class QuantityControl {
   @inline private def bss = bootstrapStyles
 
- val component = ReactComponentB[Variable[_, Int]] ("QuantityControl")
+ val component = ReactComponentB[DiodeVariable[Int]] ("QuantityControl")
     .render_P { p =>
       def button (icon: Icon, increment: Int) =
         <.span (bss.inputGroup.button,
@@ -27,6 +27,6 @@ class QuantityControl {
       )
     }.build
 
-  def apply (model: Variable[_, Int]) =
+  def apply (model: DiodeVariable[Int]) =
     component (model)
 }

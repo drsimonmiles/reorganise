@@ -2,8 +2,7 @@ package reorganise.client.components
 
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.model.LoadableModel
-import reorganise.client.model.generic.Variable
+import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.BootstrapAlertStyles.{danger, info, success}
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{TaskList, TasksView}
@@ -12,7 +11,7 @@ import scalacss.ScalaCssReact._
 object ListsSidebar {
   @inline private def bss = bootstrapStyles
 
-  case class Props (lists: Vector[TaskList], view: Variable[LoadableModel, Option[TasksView]])
+  case class Props (lists: Vector[TaskList], view: DiodeVariable[Option[TasksView]])
 
   val component = ReactComponentB[Props] ("ListsSidebar")
     .render_P { p =>
@@ -31,6 +30,6 @@ object ListsSidebar {
       )
     }.build
 
-  def apply (lists: Vector[TaskList], view: Variable[LoadableModel, Option[TasksView]]) =
+  def apply (lists: Vector[TaskList], view: DiodeVariable[Option[TasksView]]) =
     component (Props (lists, view))
 }
