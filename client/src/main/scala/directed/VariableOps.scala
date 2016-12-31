@@ -1,8 +1,8 @@
-package reorganise.client.model.generic
+package directed
 
 import diode.Action
 import diode.react.ModelProxy
-import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement}
+import japgolly.scalajs.react.ReactElement
 
 object VariableOps {
   implicit class ProxyOps[Point] (proxy: ModelProxy[Point]) {

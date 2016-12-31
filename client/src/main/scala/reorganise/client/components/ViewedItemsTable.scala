@@ -1,14 +1,12 @@
 package reorganise.client.components
 
 import diode.react.ModelProxy
+import directed.VariableOps._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.FeatureControls._
-import reorganise.client.components.generic.BasicComponents._
-import reorganise.client.components.generic.FAIcon.{close, cut, plusSquare}
-import reorganise.client.components.generic.{Button, Dropdown}
-import reorganise.client.model.generic.VariableOps._
-import reorganise.client.model.{ChangeListFeature, ChangeTaskFeature, ChangeView, ClientState, CreateList, CreateTask, DeleteList, ListFeature, TaskFeature}
+import reorganise.client.components.GenericComponents._
+import reorganise.client.components.FAIcon.{close, cut, plusSquare}
+import reorganise.client.model._
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{NoTasks, TaskList}
@@ -18,6 +16,10 @@ object ViewedItemsTable {
   @inline private def bss = bootstrapStyles
 
   val emptyList = TaskList (-1, "Select or add new list to start", Vector [Long](), Some (NoTasks))
+
+  val taskFeatures = Vector (StartFeature, RecurFeature, LabelFeature, OrderFeature)
+
+  val listFeatures = Vector (OrderFeature, DerivationFeature, PriorDaysFeature)
 
   val component = ReactComponentB[ModelProxy[ClientState]] ("ViewedItemsTable")
     .render_P { p =>
@@ -35,7 +37,7 @@ object ViewedItemsTable {
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
-                    new Dropdown[TaskFeature] ("feature", _.label, warning, taskFeatures).
+                    dropdown[TaskFeature] ("feature", _.label, warning, taskFeatures).
                       apply (p.zoom (_.taskFeature).variable (ChangeTaskFeature)))),
                   list.order.filter (taskID => p.value.visible.task (taskID).isDefined).
                     map (taskID => TaskRow (p, p.zoom (_.visible.task (taskID).get), p.value.taskFeature)),
@@ -48,7 +50,7 @@ object ViewedItemsTable {
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
-                    new Dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
+                    dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
                 p.value.visible.lists.map (list =>
                   ListEditRow (p.value.listFeature, p.zoom (_.visible), p.zoom (_.visible.list (list.id).get))),

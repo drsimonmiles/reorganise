@@ -1,8 +1,8 @@
 package reorganise.client.components
 
+import directed.DiodeVariable
 import japgolly.scalajs.react.ReactComponentB
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.BootstrapAlertStyles.{danger, info, success}
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{TaskList, TasksView}

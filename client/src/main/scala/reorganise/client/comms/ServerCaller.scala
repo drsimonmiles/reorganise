@@ -3,7 +3,7 @@ package reorganise.client.comms
 import autowire._
 import boopickle.Default._
 import reorganise.shared.comms.TasksAPI
-import reorganise.shared.model.{TaskList, VisibleTasks, TasksView, Task}
+import reorganise.shared.model.{Task, TaskList, TasksView, VisibleTasks}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 

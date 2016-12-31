@@ -5,7 +5,7 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
 import reorganise.client.components.{ListsSidebar, ViewedItemsTable}
-import reorganise.client.model.generic.VariableOps._
+import directed.VariableOps._
 import reorganise.client.model.{ChangeView, LoadAllVisibleDataFromServer, LoadableModel}
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
 import scalacss.ScalaCssReact._

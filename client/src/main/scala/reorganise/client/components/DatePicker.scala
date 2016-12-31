@@ -1,10 +1,10 @@
-package reorganise.client.components.generic
+package reorganise.client.components
 
+import directed.DiodeVariable
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import org.querki.facades.bootstrap.datepicker._
 import org.querki.jquery._
-import reorganise.client.model.generic.DiodeVariable
 
 class DatePicker {
   val baseOpts = BootstrapDatepickerOptions.

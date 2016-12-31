@@ -1,4 +1,4 @@
-package reorganise.client.model.generic
+package directed
 
 import diode.Action
 import diode.react.ModelProxy

@@ -1,4 +1,4 @@
-package reorganise.client.components.generic
+package reorganise.client.components
 
 import japgolly.scalajs.react.ReactNode
 import japgolly.scalajs.react.vdom.prefix_<^._

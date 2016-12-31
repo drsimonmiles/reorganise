@@ -1,7 +1,6 @@
-package reorganise.client.components.generic
+package directed
 
 import japgolly.scalajs.react.{BackendScope, Callback, ReactComponentB, ReactElement, ReactNode}
-import reorganise.client.model.generic.DiodeVariable
 
 object ComponentPatterns {
   case class StatefulVariable[Var] (state: Var, set: Var => Callback, commit: Callback)
