@@ -13,7 +13,7 @@ import scalacss.ScalaCssReact._
 object TasksScreen {
   @inline private def bss = bootstrapStyles
 
-  val component = ReactComponentB [ModelProxy[LoadableModel]]("TaskScreen")
+  val component = ReactComponentB[ModelProxy[LoadableModel]] ("TaskScreen")
     .render_P { p =>
       p.value.data match {
         case Ready (data) =>

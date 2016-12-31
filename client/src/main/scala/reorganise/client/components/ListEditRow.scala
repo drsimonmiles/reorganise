@@ -5,6 +5,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FeatureControls._
 import reorganise.client.components.generic.{Dropdown, FocusedTextField, QuantityControl, ReorderControl}
+import reorganise.client.components.generic.BasicComponents._
 import reorganise.client.model.ModelVariables._
 import reorganise.client.model.generic.VariableOps._
 import reorganise.client.model.{DerivationFeature, ListFeature, OrderFeature, PriorDaysFeature}
@@ -22,7 +23,7 @@ object ListEditRow {
       val row = <.div (compact, name)
       val feature = p.feature match {
         case OrderFeature =>
-          new ReorderControl (p.list.value.id).apply (p.visible.variable (_.listOrder.map (list => (list, true)), setAllListsOrder))
+          reorderControl (p.list.value.id) (p.visible.variable (_.listOrder.map (list => (list, true)), setAllListsOrder))
         case DerivationFeature =>
           if (p.list.value.derivation.isDefined)
             new Dropdown[Derivation]("derivation", _.name, primary, derivations).
@@ -30,8 +31,7 @@ object ListEditRow {
           else <.span ("").render
         case PriorDaysFeature => p.list.value.derivation match {
           case Some (PriorToToday (_)) =>
-            new QuantityControl ().
-              apply (p.list.variable (_.derivation.get.asInstanceOf [PriorToToday].days, setListPriorDays))
+            quantityControl (p.list.variable (_.derivation.get.asInstanceOf [PriorToToday].days, setListPriorDays))
           case _ => <.span ("").render
         }
       }

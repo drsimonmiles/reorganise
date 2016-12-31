@@ -3,8 +3,8 @@ package reorganise.client.screens
 import japgolly.scalajs.react.{BackendScope, ReactComponentB, ReactElement, ReactNode}
 import japgolly.scalajs.react.extra.router.RouterCtl
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.Icon
-import Icon.{check, Icon}
+import reorganise.client.components.generic.FAIcon
+import FAIcon.check
 import reorganise.client.routes.{TasksScreenID, ScreenID}
 import reorganise.client.styles.GlobalStyles
 import scalacss.ScalaCssReact._
@@ -15,10 +15,10 @@ object MainMenu {
 
   case class Props (router: RouterCtl[ScreenID], currentLoc: ScreenID)
 
-  private case class MenuItem (idx: Int, label: (Props) => ReactNode, icon: Icon, location: ScreenID)
+  private case class MenuItem (idx: Int, label: (Props) => ReactNode, icon: ReactNode, location: ScreenID)
 
   private val menuItems = Seq (
-    MenuItem (1, _ => "Tasks", check, TasksScreenID)
+    MenuItem (1, _ => "Tasks", check (), TasksScreenID)
   )
 
   private class Backend ($: BackendScope[Props, Unit]) {

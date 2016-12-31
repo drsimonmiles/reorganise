@@ -8,7 +8,5 @@ object ModelController extends Circuit[LoadableModel] with ReactConnector[Loadab
   def initialModel = LoadableModel (Empty)
 
   def actionHandler: ModelController.HandlerFunction =
-    composeHandlers (
-      new ClientStateUpdater (zoomRW (_.data) ((model, value) => model.copy (data = value)))
-    )
+    new ClientStateUpdater (zoomRW (_.data) ((model, value) => model.copy (data = value)))
 }

@@ -7,7 +7,7 @@ import reorganise.client.styles.{BootstrapAlertStyles, GlobalStyles}
 import scalacss.ScalaCssReact._
 
 class Dropdown[Item] (fieldID: String, label: Item => String,
-                      style: BootstrapAlertStyles.Value, items: Seq[Item]) {
+                      style: BootstrapAlertStyles.AlertStyle, items: Seq[Item]) {
   def bss = GlobalStyles.bootstrapStyles
 
   val component = ReactComponentB[DiodeVariable[Item]] ("Dropdown")

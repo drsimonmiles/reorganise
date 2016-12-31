@@ -18,7 +18,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
 
   def styleWrap (classNames: String*) = style (addClassNames (classNames: _*))
 
-  val buttonOpt = commonStyle (csDomain, "btn")
+  def buttonOpt (opt: AlertStyle) = style (addClassNames ("btn", s"btn-$opt"))
   val button = buttonOpt (default)
   val buttonSmall = styleWrap ("btn-sm")
   val buttonNumber = styleWrap ("btn-number")
@@ -51,7 +51,7 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   object listGroup {
     val listGroup = styleWrap ("list-group")
     val item = styleWrap ("list-group-item")
-    val itemOpt = commonStyle (contextDomain, "list-group-item")
+    def itemOpt (opt: AlertStyle) = style (addClassNames ("list-group-item", s"list-group-item-$opt"))
   }
 
   val inputAppend = styleWrap ("input-append")

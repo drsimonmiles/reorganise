@@ -2,7 +2,7 @@ package reorganise.client.components.generic
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.generic.Icon._
+import reorganise.client.components.generic.FAIcon._
 import reorganise.client.model.generic.DiodeVariable
 import reorganise.client.styles.GlobalStyles._
 
@@ -14,7 +14,6 @@ class ReorderControl[Item] (item: Item) {
     .render_P { p =>
       val order = p.value
       val index = order.indexWhere (_._1 == item)
-      val styles = Seq (bss.buttonSmall)
 
       def moveUpAll =
         if (index > 0) (order (index) +: order.take (index)) ++ order.drop (index + 1)
@@ -34,10 +33,10 @@ class ReorderControl[Item] (item: Item) {
         else order
 
       <.div (
-        <.span (Button (Button.Props (onClick = p.set (moveUpAll),   addStyles = styles), longArrowUp)),
-        <.span (Button (Button.Props (onClick = p.set (moveUpOne),   addStyles = styles), chevronCircleUp)),
-        <.span (Button (Button.Props (onClick = p.set (moveDownOne), addStyles = styles), chevronCircleDown)),
-        <.span (Button (Button.Props (onClick = p.set (moveDownAll), addStyles = styles), longArrowDown))
+        <.span (Button.small (p.set (moveUpAll),   longArrowUp ())),
+        <.span (Button.small (p.set (moveUpOne),   chevronCircleUp ())),
+        <.span (Button.small (p.set (moveDownOne), chevronCircleDown ())),
+        <.span (Button.small (p.set (moveDownAll), longArrowDown ()))
       )
     }.build
 
