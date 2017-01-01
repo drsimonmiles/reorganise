@@ -1,29 +1,52 @@
 package reorganise.client.model
 
+import reorganise.client.model.ModelOps._
 import reorganise.shared.model.{Task, TaskList, TasksView, VisibleTasks}
 
-case class ClientState (visible: VisibleTasks, view: Option[TasksView], taskFeature: TaskFeature, listFeature: ListFeature) {
+case class ClientState (tasks: Vector[ClientTask], lists: Vector[TaskList],
+                        view: Option[ClientTasksView], taskFeature: TaskFeature, listFeature: ListFeature) {
   def this (data: VisibleTasks) =
-    this (data, None, OrderFeature, OrderFeature)
+    this (toClientTasks (data.tasks, data.lists), data.lists, None, OrderFeature, OrderFeature)
 
-  def updatedList (newList: TaskList) =
-    copy (visible = visible.updatedList (newList))
+  def task (id: Long): Option[ClientTask] =
+    tasks.find (_.id == id)
 
-  def updatedTask (newTask: Task) =
-    copy (visible = visible.updatedTask (newTask))
+  def listOrder: Vector[Long] =
+    lists.map (_.id)
 
-  def removeList (oldList: Long) =
-    copy (visible = visible.removeList (oldList))
+  val viewedList: Option[TaskList] =
+    view.map (_.list)
 
-  def removeTask (oldTask: Task) =
-    copy (visible = visible.removeTask (oldTask))
+  def updatedTask (newTask: ClientTask): ClientState =
+    tasks.indexWhere (_.id == newTask.id) match {
+      case -1    => copy (tasks = tasks :+ newTask)                   // add new task
+      case index => copy (tasks = tasks.updated (index, newTask))     // replace old task
+    }
 
-  def withListOrder (order: Vector[Long]) =
-    copy (visible = visible.withListOrder (order))
+  def updatedList (newList: TaskList): ClientState =
+    lists.indexWhere (_.id == newList.id) match {
+      case -1    => copy (lists = lists :+ newList)                   // add new list
+      case index =>                                                   // replace old list
+        copy (tasks = tasks.map {
+          t => if (t.list.id == newList.id) t.copy (list = newList) else t
+        }, lists = lists.updated (index, newList))
+    }
 
-  def withVisible (newVisible: VisibleTasks) =
-    copy (visible = newVisible)
+  def removeTask (task: ClientTask): ClientState =
+    copy (tasks = tasks.filterNot (_ == task))
 
-  def viewedList: Option[TaskList] =
-    view.flatMap (current => visible.list (current.list))
+  def removeList (listID: Long): ClientState =
+    copy (lists = lists.filterNot (_.id == listID))
+
+  def withListOrder (order: Vector[Long]): ClientState =
+    copy (lists = order.flatMap (id => lists.find (_.id == id)))
+
+//  def withView (newView: Option[TasksView]): ClientState =
+//    copy (view = convertToClientView (newView, lists))
+
+  def withTasks (newTasks: Vector[Task]): ClientState =
+    copy (tasks = toClientTasks (newTasks, lists))
+
+  def withVisible (data: VisibleTasks): ClientState =
+    ClientState (toClientTasks (data.tasks, data.lists), data.lists, view, taskFeature, listFeature)
 }

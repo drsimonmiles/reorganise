@@ -45,7 +45,7 @@ object GenericComponents {
     def button (icon: ReactNode, increment: Int) =
       <.span (bss.inputGroup.button,
         <.button (^.tpe := "button", bss.buttonOpt (default), icon,
-          ^.onClick --> p.set ((p.model.value + increment).max (0))))
+          ^.onClick --> p.set ((p.value + increment).max (0))))
     <.div (bss.inputGroup.inputGroup,
       button (minus (), -1),
       <.input (bss.formControl, ^.tpe := "text", ^.name := "quantity", ^.value := p.value, ^.disabled := "yes"),

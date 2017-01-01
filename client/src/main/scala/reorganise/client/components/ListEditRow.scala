@@ -1,16 +1,14 @@
 package reorganise.client.components
 
-import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.GenericComponents._
 import reorganise.client.components.SpecificComponents._
 import reorganise.client.model.ModelVariables._
-import directed.VariableOps._
-import reorganise.client.model.{DerivationFeature, ListFeature, OrderFeature, PriorDaysFeature}
+import reorganise.client.model.{ClientState, DerivationFeature, ListFeature, OrderFeature, PriorDaysFeature}
 import reorganise.client.styles.BootstrapAlertStyles.primary
 import reorganise.client.styles.GlobalStyles._
-import reorganise.shared.model.{Derivation, NoRestriction, NoTasks, PriorToToday, TaskList, VisibleTasks}
+import reorganise.shared.model.{Derivation, NoRestriction, NoTasks, PriorToToday, TaskList}
 import scalacss.ScalaCssReact._
 
 object ListEditRow {
@@ -18,22 +16,22 @@ object ListEditRow {
 
   val derivations = Vector (NoTasks, NoRestriction, PriorToToday (0))
 
-  case class Props (feature: ListFeature, visible: ModelProxy[VisibleTasks], list: ModelProxy[TaskList])
+  case class Props (feature: ListFeature, visible: ClientState, list: TaskList)
+
+  private val listNameField = focusedTextField ("write list name")
 
   val component = ReactComponentB[Props] ("ListEditRow")
     .render_P { p =>
-      val name = focusedTextField ("write list name") (p.list.variable (_.name, setListName))
+      val name = listNameField (SetListName.from (p.list))
       val feature = p.feature match {
         case OrderFeature =>
-          reorderControl (p.list.value.id) (p.visible.variable (_.listOrder.map (list => (list, true)), setAllListsOrder))
+          reorderControl (p.list.id) (SetAllListsOrder.from (p.visible.listOrder))
         case DerivationFeature =>
-          if (p.list.value.derivation.isDefined)
-            dropdown[Derivation]("derivation", _.name, primary, derivations).
-              apply (p.list.variable (_.derivation.get, setListDerivation))
+          if (p.list.derivation.isDefined)
+            dropdown[Derivation]("derivation", _.name, primary, derivations) (SetListDerivation.from (p.list))
           else <.span ("").render
-        case PriorDaysFeature => p.list.value.derivation match {
-          case Some (PriorToToday (_)) =>
-            quantityControl (p.list.variable (_.derivation.get.asInstanceOf [PriorToToday].days, setListPriorDays))
+        case PriorDaysFeature => p.list.derivation match {
+          case Some (PriorToToday (_)) => quantityControl (SetListPriorDays.from (p.list))
           case _ => <.span ("").render
         }
       }
@@ -44,6 +42,6 @@ object ListEditRow {
       )
     }.build
 
-  def apply (feature: ListFeature, visible: ModelProxy[VisibleTasks], list: ModelProxy[TaskList]): ReactElement =
+  def apply (feature: ListFeature, visible: ClientState, list: TaskList): ReactElement =
     component (Props (feature, visible, list))
 }

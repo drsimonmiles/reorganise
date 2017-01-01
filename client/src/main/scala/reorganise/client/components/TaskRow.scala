@@ -1,46 +1,36 @@
 package reorganise.client.components
 
-import diode.react.ModelProxy
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.GenericComponents._
 import reorganise.client.components.SpecificComponents._
-import directed.VariableOps._
-import reorganise.client.model.ModelOps._
 import reorganise.client.model.ModelVariables._
-import reorganise.client.model.{ClientState, LabelFeature, OrderFeature, RecurFeature, StartFeature, TaskFeature}
+import reorganise.client.model._
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
-import reorganise.shared.model.{Task, TaskList}
+import reorganise.shared.model.TaskList
 import scalacss.ScalaCssReact._
 
 object TaskRow {
   @inline private def bss = bootstrapStyles
 
-  case class Props (state: ModelProxy[ClientState], task: ModelProxy[Task], feature: TaskFeature)
+  case class Props (state: ClientState, task: ClientTask, feature: TaskFeature)
 
   private val textField = focusedTextField ("write task description")
 
   val component = ReactComponentB[Props] ("TaskRow")
     .render_P { p =>
-      val completed = p.task.editor (_.completed, setTaskCompleted, checkbox)
-      val text = p.task.editor (_.text, setTaskText, textField)
+      val completed = checkbox (SetTaskCompleted.from (p.task))
+      val text = textField (SetTaskText.from (p.task))
       val control = p.feature match {
         case LabelFeature =>
-          p.task.editor (t => p.state.value.visible.list (t.list) match {
-            case Some (list) => list
-            case None => ViewedItemsTable.emptyList
-          }, setTaskList, dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists))
+          dropdown[TaskList] ("label", _.name, primary, p.state.lists) (SetTaskList.from (p.task))
         case StartFeature =>
-          DatePicker (p.task.variable (_.startDate, setTaskStart))
+          DatePicker (SetTaskStart.from (p.task))
         case RecurFeature =>
-          recurControl (p.task.variable (_.recur, setTaskRecur))
+          recurControl (SetTaskRecur.from (p.task))
         case OrderFeature =>
-          if (p.state.value.viewedList.isDefined)
-            reorderControl (p.task.value.id).apply (p.state.zoom (_.viewedList.get).
-              variable[Vector[(Long, Boolean)]] (list => orderWithVisibility (p.state.value, list.order),
-              setListOrder))
-          else <.span ("").render
+          reorderControl (p.task.id) (SetListOrder.from ((p.state, p.task.list)))
       }
 
       <.div (bss.row, compact,
@@ -54,6 +44,6 @@ object TaskRow {
       )
     }.build
 
-  def apply (state: ModelProxy[ClientState], task: ModelProxy[Task], feature: TaskFeature): ReactElement =
+  def apply (state: ClientState, task: ClientTask, feature: TaskFeature): ReactElement =
     component (Props (state, task, feature))
 }

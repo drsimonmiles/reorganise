@@ -1,11 +1,11 @@
 package reorganise.client.components
 
-import diode.react.ModelProxy
-import directed.VariableOps._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
-import reorganise.client.components.GenericComponents._
 import reorganise.client.components.FAIcon.{close, cut, plusSquare}
+import reorganise.client.components.GenericComponents._
+import reorganise.client.model.ModelController.dispatchCB
+import reorganise.client.model.ModelVariables._
 import reorganise.client.model._
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
@@ -21,27 +21,27 @@ object ViewedItemsTable {
 
   val listFeatures = Vector (OrderFeature, DerivationFeature, PriorDaysFeature)
 
-  val component = ReactComponentB[ModelProxy[ClientState]] ("ViewedItemsTable")
+  val component = ReactComponentB[ClientState] ("ViewedItemsTable")
     .render_P { p =>
-      panel (p.value.viewedList.map (_.name).getOrElse ("Lists"),
-          p.value.viewedList match {
+      panel (p.viewedList.map (_.name).getOrElse ("Lists"),
+          p.viewedList match {
             case Some (list) =>
-              val backupList = p.value.visible.lists.find (_.id != list.id).getOrElse (emptyList)
+              val backupList = p.lists.find (_.id != list.id).getOrElse (emptyList)
               val deleteCurrentList: CallbackTo[Unit] =
-                p.dispatchCB (DeleteList (list.id)) >> p.dispatchCB (ChangeView (Some (p.value.view.get.copy (list = backupList.id))))
-              val includeCompleted = p.value.view.get.includeCompleted
+                dispatchCB (DeleteList (list.id)) >> dispatchCB (ChangeView (Some (p.view.get.copy (list = backupList))))
+              val includeCompleted = p.view.get.includeCompleted
               val toggleCompleted: Callback =
-                p.dispatchCB (ChangeView (p.value.view.map (_.copy (includeCompleted = !includeCompleted))))
+                dispatchCB (ChangeView (p.view.map (_.copy (includeCompleted = !includeCompleted))))
 
               <.div (bss.listGroup.listGroup,
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
                     dropdown[TaskFeature] ("feature", _.label, warning, taskFeatures).
-                      apply (p.zoom (_.taskFeature).variable (ChangeTaskFeature)))),
-                  list.order.filter (taskID => p.value.visible.task (taskID).isDefined).
-                    map (taskID => TaskRow (p, p.zoom (_.visible.task (taskID).get), p.value.taskFeature)),
-                list.derivation.isEmpty ?= Button (p.dispatchCB (CreateTask), plusSquare (), " New task"),
+                      apply (ChangeTaskFeature.from (p.taskFeature)))),
+                  list.order.filter (taskID => p.task (taskID).isDefined).
+                    map (taskID => TaskRow (p, p.task (taskID).get, p.taskFeature)),
+                list.derivation.isEmpty ?= Button (dispatchCB (CreateTask), plusSquare (), " New task"),
                 Button (deleteCurrentList, close (), " Delete list"),
                 Button (toggleCompleted, cut (), if (includeCompleted) " Hide completed" else " Show completed")
               )
@@ -51,16 +51,15 @@ object ViewedItemsTable {
                   <.div (bss.columns (10), <.span ("")),
                   <.div (bss.columns (2),
                     dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
-                      apply (p.zoom (_.listFeature).variable (ChangeListFeature)))),
-                p.value.visible.lists.map (list =>
-                  ListEditRow (p.value.listFeature, p.zoom (_.visible), p.zoom (_.visible.list (list.id).get))),
-                Button (p.dispatchCB (CreateList (false)), plusSquare (), " New label list"),
-                Button (p.dispatchCB (CreateList (true)), plusSquare (), " New derived list")
+                      apply (ChangeListFeature.from (p.listFeature)))),
+                p.lists.map (list => ListEditRow (p.listFeature, p, list)),
+                Button (dispatchCB (CreateList (false)), plusSquare (), " New label list"),
+                Button (dispatchCB (CreateList (true)), plusSquare (), " New derived list")
               )
           }
       )
     }.build
 
-  def apply (data: ModelProxy[ClientState]) =
+  def apply (data: ClientState): ReactElement =
     component (data)
 }

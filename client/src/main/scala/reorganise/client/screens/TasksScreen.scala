@@ -5,8 +5,8 @@ import diode.react.ModelProxy
 import japgolly.scalajs.react.vdom.prefix_<^._
 import japgolly.scalajs.react.{Callback, ReactComponentB}
 import reorganise.client.components.{ListsSidebar, ViewedItemsTable}
-import directed.VariableOps._
 import reorganise.client.model.{ChangeView, ClientState, LoadAllVisibleDataFromServer}
+import reorganise.client.model.ModelVariables._
 import reorganise.client.styles.GlobalStyles.bootstrapStyles
 import scalacss.ScalaCssReact._
 
@@ -18,9 +18,8 @@ object TasksScreen {
       p.value match {
         case Ready (data) =>
           <.div (bss.row,
-            <.div (bss.columns (2), ListsSidebar (p.value.get.visible.lists,
-              p.zoom (_.get.view).variable (ChangeView))),
-            <.div (bss.columns (10), ViewedItemsTable (p.zoom (_.get)))
+            <.div (bss.columns (2), ListsSidebar (p.value.get.lists, ChangeView.from (data.view))),
+            <.div (bss.columns (10), ViewedItemsTable (data))
           )
         case _ => <.div ("Loading...")
       }
