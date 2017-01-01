@@ -1,6 +1,6 @@
 package reorganise.client.model
 
-import reorganise.shared.model.{TasksView, VisibleTasks, Derivation, TaskList, PriorToToday, Task}
+import reorganise.shared.model.{Derivation, PriorToToday, Task, TaskList, VisibleTasks}
 
 object ModelVariables {
   def setTaskCompleted (task: Task, completed: Boolean) = UpdateTask (task.copy (completed = completed))

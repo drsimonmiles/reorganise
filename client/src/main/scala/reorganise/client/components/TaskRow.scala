@@ -8,7 +8,7 @@ import reorganise.client.components.SpecificComponents._
 import directed.VariableOps._
 import reorganise.client.model.ModelOps._
 import reorganise.client.model.ModelVariables._
-import reorganise.client.model.{ClientState, LabelFeature, LoadableModel, OrderFeature, RecurFeature, StartFeature, TaskFeature}
+import reorganise.client.model.{ClientState, LabelFeature, OrderFeature, RecurFeature, StartFeature, TaskFeature}
 import reorganise.client.styles.BootstrapAlertStyles._
 import reorganise.client.styles.GlobalStyles._
 import reorganise.shared.model.{Task, TaskList}
@@ -32,7 +32,7 @@ object TaskRow {
             case None => ViewedItemsTable.emptyList
           }, setTaskList, dropdown[TaskList] ("label", _.name, primary, p.state.value.visible.lists))
         case StartFeature =>
-          new DatePicker ().apply (p.task.variable (_.startDate, setTaskStart))
+          DatePicker (p.task.variable (_.startDate, setTaskStart))
         case RecurFeature =>
           recurControl (p.task.variable (_.recur, setTaskRecur))
         case OrderFeature =>

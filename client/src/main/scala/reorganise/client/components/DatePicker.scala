@@ -6,7 +6,7 @@ import japgolly.scalajs.react.vdom.prefix_<^._
 import org.querki.facades.bootstrap.datepicker._
 import org.querki.jquery._
 
-class DatePicker {
+object DatePicker {
   val baseOpts = BootstrapDatepickerOptions.
     autoclose (true).
     todayHighlight (true).

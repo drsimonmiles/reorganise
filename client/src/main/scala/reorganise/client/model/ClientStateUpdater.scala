@@ -1,7 +1,7 @@
 package reorganise.client.model
 
 import diode.data.{Pot, Ready}
-import diode.{NoAction, ActionHandler, Effect, ModelRW}
+import diode.{ActionHandler, Effect, ModelRW}
 import reorganise.client.comms.ServerCaller._
 import scala.concurrent.ExecutionContext.Implicits.global
 
