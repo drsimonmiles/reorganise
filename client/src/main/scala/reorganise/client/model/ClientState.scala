@@ -28,12 +28,9 @@ case class ClientState (tasks: Vector[ClientTask], lists: Vector[TaskList],
       case -1    =>
         copy (lists = lists :+ newList)                   // add new list
       case index =>                                                   // replace old list
-        println (s"updating list at index $index")
         val newTasks = tasks.map (t => if (t.list.id == newList.id) t.copy (list = newList) else t)
         val newView = view.map (tv => if (tv.list.id == newList.id) tv.copy (list = newList) else tv)
         val newState = copy (tasks = newTasks, view = newView, lists = lists.updated (index, newList))
-        println (s"Equal object ${newState eq this}")
-        println (s"Equal content ${newState == this}")
         newState
     }
 
@@ -46,12 +43,11 @@ case class ClientState (tasks: Vector[ClientTask], lists: Vector[TaskList],
   def withListOrder (order: Vector[Long]): ClientState =
     copy (lists = order.flatMap (id => lists.find (_.id == id)))
 
-//  def withView (newView: Option[TasksView]): ClientState =
-//    copy (view = convertToClientView (newView, lists))
-
   def withTasks (newTasks: Vector[Task]): ClientState =
     copy (tasks = toClientTasks (newTasks, lists))
 
-  def withVisible (data: VisibleTasks): ClientState =
-    ClientState (toClientTasks (data.tasks, data.lists), data.lists, view, taskFeature, listFeature)
+  def withVisible (data: VisibleTasks): ClientState = {
+    val newView = view.flatMap (tv => data.lists.find (_.id == tv.list.id).map (l => tv.copy (list = l)))
+    ClientState (toClientTasks (data.tasks, data.lists), data.lists, newView, taskFeature, listFeature)
+  }
 }

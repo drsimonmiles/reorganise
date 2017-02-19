@@ -9,7 +9,7 @@ object RouterConfig {
     import dsl._
 
     val taskRoute = staticRoute (root, TasksScreenID) ~> render {
-      val y = ModelController.connect (_.state)
+      val y = ModelController.connect (x => x)
       y (TasksScreen.component (_))
     }
     val errorRoute = staticRoute (root, ErrorScreenID) ~> render (ErrorScreen ())
