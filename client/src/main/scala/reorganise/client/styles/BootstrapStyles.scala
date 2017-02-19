@@ -3,7 +3,7 @@ package reorganise.client.styles
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.styles.BootstrapAlertStyles._
 import scalacss.Defaults._
-import scalacss.mutable
+import scalacss.{StyleA, mutable}
 
 class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline ()(r) {
   import dsl._
@@ -12,13 +12,14 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
 
   val contextDomain = Domain.ofValues (success, info, warning, danger)
 
-  def commonStyle[A] (domain: Domain[A], base: String) = styleF (domain)(opt =>
+  private def commonStyle[A] (domain: Domain[A], base: String) = styleF (domain)(opt =>
     styleS (addClassNames (base, s"$base-$opt"))
   )
 
-  def styleWrap (classNames: String*) = style (addClassNames (classNames: _*))
+  private def styleWrap (classNames: String*) = style (addClassNames (classNames: _*))
 
-  def buttonOpt (opt: AlertStyle) = style (addClassNames ("btn", s"btn-$opt"))
+  val buttonOpt: Map[AlertStyle, StyleA] =
+    alertStyles.map (alert => alert -> style (addClassNames ("btn", s"btn-$alert"))).toMap
   val button = buttonOpt (default)
   val buttonSmall = styleWrap ("btn-sm")
   val buttonNumber = styleWrap ("btn-number")
@@ -51,7 +52,8 @@ class BootstrapStyles (implicit r: mutable.Register) extends StyleSheet.Inline (
   object listGroup {
     val listGroup = styleWrap ("list-group")
     val item = styleWrap ("list-group-item")
-    def itemOpt (opt: AlertStyle) = style (addClassNames ("list-group-item", s"list-group-item-$opt"))
+    val itemOpt: Map[AlertStyle, StyleA] =
+      alertStyles.map (alert => alert -> style (addClassNames ("list-group-item", s"list-group-item-$alert"))).toMap
   }
 
   val inputAppend = styleWrap ("input-append")

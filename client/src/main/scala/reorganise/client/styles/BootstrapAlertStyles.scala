@@ -10,4 +10,6 @@ object BootstrapAlertStyles {
   case object info extends AlertStyle
   case object warning extends AlertStyle
   case object danger extends AlertStyle
+
+  val alertStyles = Vector (default, primary, success, info, warning, danger)
 }

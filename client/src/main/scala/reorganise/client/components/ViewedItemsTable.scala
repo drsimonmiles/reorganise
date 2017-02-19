@@ -33,6 +33,9 @@ object ViewedItemsTable {
               val toggleCompleted: Callback =
                 dispatchCB (ChangeView (p.view.map (_.copy (includeCompleted = !includeCompleted))))
 
+              try {println (s"First item now ${p.task (list.order.head).get.text}")} catch {
+                case t: Throwable => println (t.getMessage)
+              }
               <.div (bss.listGroup.listGroup,
                 <.div (bss.row, compact,
                   <.div (bss.columns (10), <.span ("")),

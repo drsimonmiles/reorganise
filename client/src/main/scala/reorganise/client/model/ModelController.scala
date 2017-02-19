@@ -5,11 +5,11 @@ import diode.data.{Empty, Pot}
 import diode.react.ReactConnector
 import japgolly.scalajs.react.Callback
 
-object ModelController extends Circuit[Pot[ClientState]] with ReactConnector[Pot[ClientState]] {
-  def initialModel = Empty
+object ModelController extends Circuit[Model] with ReactConnector[Model] {
+  def initialModel = Model (Empty)
 
   def actionHandler: ModelController.HandlerFunction =
-    new ClientStateUpdater (zoomRW (x => x) ((model, value) => value))
+    new ClientStateUpdater (zoomTo (_.state))
 
   def dispatchCB (action: Action): Callback =
     Callback (dispatch (action))

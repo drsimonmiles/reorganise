@@ -25,11 +25,16 @@ case class ClientState (tasks: Vector[ClientTask], lists: Vector[TaskList],
 
   def updatedList (newList: TaskList): ClientState =
     lists.indexWhere (_.id == newList.id) match {
-      case -1    => copy (lists = lists :+ newList)                   // add new list
+      case -1    =>
+        copy (lists = lists :+ newList)                   // add new list
       case index =>                                                   // replace old list
-        copy (tasks = tasks.map {
-          t => if (t.list.id == newList.id) t.copy (list = newList) else t
-        }, lists = lists.updated (index, newList))
+        println (s"updating list at index $index")
+        val newTasks = tasks.map (t => if (t.list.id == newList.id) t.copy (list = newList) else t)
+        val newView = view.map (tv => if (tv.list.id == newList.id) tv.copy (list = newList) else tv)
+        val newState = copy (tasks = newTasks, view = newView, lists = lists.updated (index, newList))
+        println (s"Equal object ${newState eq this}")
+        println (s"Equal content ${newState == this}")
+        newState
     }
 
   def removeTask (task: ClientTask): ClientState =

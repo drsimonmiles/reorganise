@@ -7,7 +7,7 @@ object ModelOps {
     tasks.flatMap (t => lists.find (_.id == t.list).map (l => ClientTask (t.id, t.text, t.startDate, l, t.recur, t.completed)))
 
   def toClientView (view: Option[TasksView], lists: Vector[TaskList]): Option[ClientTasksView] =
-    view.flatMap (t => lists.find (_.id == t.list).map (l => ClientTasksView (t.includeCompleted, l)))
+    view.flatMap (tv => lists.find (_.id == tv.list).map (l => ClientTasksView (tv.includeCompleted, l)))
 
   def toSharedTask (task: ClientTask): Task =
     Task (task.id, task.text, task.startDate, task.list.id, task.recur, task.completed)

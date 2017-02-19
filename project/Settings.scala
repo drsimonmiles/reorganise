@@ -28,7 +28,7 @@ object Settings {
     val scalaCSS = "0.4.1"
     val autowire = "0.2.5"
     val booPickle = "1.2.4"
-    val diode = "1.1.0"
+    val diode = "1.1.1"
     val react = "15.3.0"
     val jQuery = "1.11.1"      // Bootstrap requires version earlier than 3
     val bootstrap = "3.3.6"    // Newer version does not contain LESS source
@@ -56,8 +56,8 @@ object Settings {
     "com.github.japgolly.scalajs-react" %%% "core" % versions.scalajsReact,
     "com.github.japgolly.scalajs-react" %%% "extra" % versions.scalajsReact,
     "com.github.japgolly.scalacss" %%% "ext-react" % versions.scalaCSS,
-    "me.chrons" %%% "diode" % versions.diode,
-    "me.chrons" %%% "diode-react" % versions.diode,
+    "io.suzaku" %%% "diode" % versions.diode,
+    "io.suzaku" %%% "diode-react" % versions.diode,
     "org.scala-js" %%% "scalajs-dom" % versions.scalaDom,
     "org.querki" %%% "bootstrap-datepicker-facade" % "0.7"
   ))
