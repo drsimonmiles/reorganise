@@ -59,7 +59,7 @@ object Settings {
     "io.suzaku" %%% "diode" % versions.diode,
     "io.suzaku" %%% "diode-react" % versions.diode,
     "org.scala-js" %%% "scalajs-dom" % versions.scalaDom,
-    "org.querki" %%% "bootstrap-datepicker-facade" % "0.7"
+    "org.querki" %%% "bootstrap-datepicker-facade" % "0.8"
   ))
 
   /** Dependencies for external JS libs that are bundled into a single .js file according to dependency order */

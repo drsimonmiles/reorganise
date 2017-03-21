@@ -6,7 +6,7 @@ import reorganise.client.comms.ServerCaller._
 import reorganise.client.model.ModelOps._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ClientStateUpdater[Model] (data: ModelRW[Model, Pot[ClientState]]) extends ActionHandler (data) {
+class ClientStateUpdater (data: ModelRW[Pot[ClientState], Pot[ClientState]]) extends ActionHandler (data) {
   def handle = {
     case LoadAllVisibleDataFromServer =>
       effectOnly (Effect (loadVisibleDataFromServer.map (RefreshClientData)))
@@ -14,7 +14,7 @@ class ClientStateUpdater[Model] (data: ModelRW[Model, Pot[ClientState]]) extends
       updated (value.map (_.withTasks (newTasks)))
     case RefreshClientData (visible) =>
       value match {
-        case Ready (existing) => updated (value.map (_.withVisible (visible)))
+        case Ready (_) => updated (value.map (_.withVisible (visible)))
         case _ => updated (Ready (new ClientState (visible)))
       }
     case CreateTask =>

@@ -26,7 +26,7 @@ object TaskRow {
         case LabelFeature =>
           dropdown[TaskList] ("label", _.name, primary, p.state.lists) (SetTaskList.from (p.task))
         case StartFeature =>
-          DatePicker (SetTaskStart.from (p.task))
+          datePicker (SetTaskStart.from (p.task))
         case RecurFeature =>
           recurControl (SetTaskRecur.from (p.task))
         case OrderFeature =>

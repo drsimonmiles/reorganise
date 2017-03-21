@@ -116,7 +116,7 @@ class TasksService (tasksFile: String) extends TasksAPI {
       case None => emptySharedTasksData
     }
 
-  def updateTask (task: Task): VisibleTasks = {
+  def updateTask (task: Task): VisibleTasks =
     retrieveTasksData match {
       case Some (data) =>
         val newTaskData =
@@ -129,7 +129,6 @@ class TasksService (tasksFile: String) extends TasksAPI {
         storeTasksData (newTaskData)
       case None => emptySharedTasksData
     }
-  }
 
   def updateList (list: TaskList): VisibleTasks =
     retrieveTasksData match {

@@ -1,7 +1,7 @@
 package reorganise.client.model
 
 import reorganise.client.model.ModelOps._
-import reorganise.shared.model.{Task, TaskList, TasksView, VisibleTasks}
+import reorganise.shared.model.{Task, TaskList, VisibleTasks}
 
 case class ClientState (tasks: Vector[ClientTask], lists: Vector[TaskList],
                         view: Option[ClientTasksView], taskFeature: TaskFeature, listFeature: ListFeature) {

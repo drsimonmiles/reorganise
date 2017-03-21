@@ -1,10 +1,39 @@
 package reorganise.client.components
 
-import directed.ComponentPatterns.editor
+import directed.ComponentPatterns._
+import directed.DiodeVariable
+import japgolly.scalajs.react.{Callback, ReactElement, ReactEventI, TopNode}
 import japgolly.scalajs.react.vdom.prefix_<^._
 import reorganise.client.components.FAIcon.{chevronCircleDown, chevronCircleUp, longArrowDown, longArrowUp, refresh}
+import reorganise.client.components.GenericComponents._
+import org.querki.facades.bootstrap.datepicker._
+import org.querki.jquery._
 
 object SpecificComponents {
+  def datePicker: DiodeVariable[String] => ReactElement = {
+    val datePickerOptions = BootstrapDatepickerOptions.
+      format ("yyyy-mm-dd").
+      autoclose (true).
+      todayHighlight (true).
+      todayBtnLinked ().
+      disableTouchKeyboard (true).
+      orientation (Orientation.Auto)._result
+
+    def datePickerDynamics (v: DiodeVariable[String], n: TopNode) = Callback {
+      $ (n).datepicker (datePickerOptions)
+      def change (x: JQueryEventObject, y: Any): Any = v.set ($ (n).getFormattedDate ()).runNow ()
+      $ (n).on ("changeDate", change _)
+    }
+
+/*    atomicExternalEditor[String] ("DatePicker") (datePickerDynamics) { v =>
+      <.input (^.tpe := "text", ^.value := v.state)
+    }*/
+
+    externalEditor[String] ("DatePicker") (datePickerDynamics) { v =>
+      <.input (^.tpe := "text", ^.value := v.value)
+    }
+  }
+
   def recurControl = editor[Option[Int]] ("RecurControl") { p =>
     p.value match {
       case Some (days) => <.span (refresh.basic, days.toString)
@@ -34,10 +63,11 @@ object SpecificComponents {
       else order
 
     <.div (
-      <.span (Button.small (p.set (moveUpAll),   longArrowUp ())),
-      <.span (Button.small (p.set (moveUpOne),   chevronCircleUp ())),
-      <.span (Button.small (p.set (moveDownOne), chevronCircleDown ())),
-      <.span (Button.small (p.set (moveDownAll), longArrowDown ()))
+      <.span (buttonSmall (p.set (moveUpAll),   Seq (longArrowUp ()))),
+      <.span (buttonSmall (p.set (moveUpOne),   Seq (chevronCircleUp ()))),
+      <.span (buttonSmall (p.set (moveDownOne), Seq (chevronCircleDown ()))),
+      <.span (buttonSmall (p.set (moveDownAll), Seq (longArrowDown ())))
+
     )
   }
 }

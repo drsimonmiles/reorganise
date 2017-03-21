@@ -17,10 +17,10 @@ object FAIcon {
       )
 
     def basic: ReactNode =
-      <.i (^.className := s"fa fa-$name")
+      <.i (^.className := s"fa fa-$name", ^.key := s"fa fa-$name")
 
     def fixedWith: ReactNode =
-      <.i (^.className := s"fa fa-$name fa-fw")
+      <.i (^.className := s"fa fa-$name fa-fw", ^.key := s"fa fa-$name fa-fw")
   }
 
   def adjust = Icon ("adjust")

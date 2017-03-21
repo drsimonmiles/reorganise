@@ -12,6 +12,22 @@ import scalacss.ScalaCssReact._
 object GenericComponents {
   private def bss = GlobalStyles.bootstrapStyles
 
+  val buttonItem = containerItem[Callback] ("Button") { s =>
+    <.button (bss.buttonOpt (default), ^.tpe := "button", ^.onClick --> s.props, s.children)
+  }
+
+  val button = container[Callback] ("Button") { s =>
+    <.button (bss.buttonOpt (default), ^.tpe := "button", ^.onClick --> s.props, s.children)
+  }
+
+  val buttonSmallItem = containerItem[Callback] ("Button") { s =>
+    <.button (bss.buttonOpt (default), bss.buttonSmall, ^.tpe := "button", ^.onClick --> s.props, s.children)
+  }
+
+  val buttonSmall = container[Callback] ("Button") { s =>
+    <.button (bss.buttonOpt (default), bss.buttonSmall, ^.tpe := "button", ^.onClick --> s.props, s.children)
+  }
+
   val checkbox = editor[Boolean] ("Checkbox") { v =>
     <.input.checkbox (^.checked := v.value, ^.onChange --> v.set (!v.value))
   }

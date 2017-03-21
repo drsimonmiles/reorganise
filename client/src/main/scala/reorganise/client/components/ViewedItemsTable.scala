@@ -41,9 +41,9 @@ object ViewedItemsTable {
                       apply (ChangeTaskFeature.from (p.taskFeature)))),
                   list.order.filter (taskID => p.task (taskID).isDefined).
                     map (taskID => TaskRow (p, p.task (taskID).get, p.taskFeature)),
-                list.derivation.isEmpty ?= Button (dispatchCB (CreateTask), plusSquare (), " New task"),
-                Button (deleteCurrentList, close (), " Delete list"),
-                Button (toggleCompleted, cut (), if (includeCompleted) " Hide completed" else " Show completed")
+                list.derivation.isEmpty ?= buttonItem (dispatchCB (CreateTask), Seq (plusSquare (), " New task"), "new"),
+                button (deleteCurrentList, Seq (close (), " Delete list")),
+                button (toggleCompleted, Seq (cut (), if (includeCompleted) " Hide completed" else " Show completed"))
               )
             case None =>
               <.div (bss.listGroup.listGroup,
@@ -53,8 +53,8 @@ object ViewedItemsTable {
                     dropdown[ListFeature] ("feature", _.label, warning, listFeatures).
                       apply (ChangeListFeature.from (p.listFeature)))),
                 p.lists.map (list => ListEditRow (p.listFeature, p, list)),
-                Button (dispatchCB (CreateList (false)), plusSquare (), " New label list"),
-                Button (dispatchCB (CreateList (true)), plusSquare (), " New derived list")
+                button (dispatchCB (CreateList (false)), Seq (plusSquare (), " New label list")),
+                button (dispatchCB (CreateList (true)), Seq (plusSquare (), " New derived list"))
               )
           }
       )
